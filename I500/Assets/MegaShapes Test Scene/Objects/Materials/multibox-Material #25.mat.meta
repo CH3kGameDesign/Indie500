@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1b5256ef9dba33440a24a092934f009c
+timeCreated: 1426944426
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaShapes Test Scene/Objects/Materials/multibox-Material #25.mat
+  uploadId: 665842

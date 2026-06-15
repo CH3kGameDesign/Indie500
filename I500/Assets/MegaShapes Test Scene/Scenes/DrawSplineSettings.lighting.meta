@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b7b123f8f186a4e498bfe2edb8d7aa03
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaShapes Test Scene/Scenes/DrawSplineSettings.lighting
+  uploadId: 665842

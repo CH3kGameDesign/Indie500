@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b0d7f0ca8a96f9742884b99c66129f3f
+timeCreated: 1426944430
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaShapes Test Scene/Objects/Materials/hedge.mat
+  uploadId: 665842

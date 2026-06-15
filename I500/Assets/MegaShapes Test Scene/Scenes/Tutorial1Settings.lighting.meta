@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 59f3cf81d29b0194c9a425a5b825786d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaShapes Test Scene/Scenes/Tutorial1Settings.lighting
+  uploadId: 665842

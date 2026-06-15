@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 70a264110324a7746ae32123b1d31954
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaShapes Test Scene/Scenes/CarpathSettings.lighting
+  uploadId: 665842

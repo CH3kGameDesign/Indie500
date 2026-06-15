@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: b77298fa72a905346b5c8ba3f895f627
+timeCreated: 18446744011573954816
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaFiers/Scripts/MegaShape/Editor/MegaShapePro/MegaRopeEditor.cs
+  uploadId: 665842

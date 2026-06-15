@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 16f0c14595158b445b02d8f1a4bb5865
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaShapes Test Scene/Scenes/TrainSetSettings.lighting
+  uploadId: 665842

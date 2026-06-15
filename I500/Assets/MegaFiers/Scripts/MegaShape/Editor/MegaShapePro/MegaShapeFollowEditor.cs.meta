@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: ab14446243ae400428bd7bdb15a916b7
+timeCreated: 18446744011573954816
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaFiers/Scripts/MegaShape/Editor/MegaShapePro/MegaShapeFollowEditor.cs
+  uploadId: 665842

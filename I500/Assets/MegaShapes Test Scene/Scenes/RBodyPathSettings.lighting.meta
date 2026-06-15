@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b140994b5ab54164d82bd1de4da828f3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaShapes Test Scene/Scenes/RBodyPathSettings.lighting
+  uploadId: 665842

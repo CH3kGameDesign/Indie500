@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 77e0208d1776c174ca99574963d45c5a
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaShapes Test Scene/Misc/Bouncy.physicMaterial
+  uploadId: 665842

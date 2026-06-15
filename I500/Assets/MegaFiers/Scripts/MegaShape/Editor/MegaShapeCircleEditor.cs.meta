@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 4de8dc9d4f5a58c42913c7c3c37b87e7
+timeCreated: 18446744011573954816
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaFiers/Scripts/MegaShape/Editor/MegaShapeCircleEditor.cs
+  uploadId: 665842

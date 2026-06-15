@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 00e9eb6a642e9a74ba8d7e531c470c2f
+timeCreated: 18446744011573954816
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaFiers/Scripts/MegaShape/MegaShapePro/MegaLoftLayerMultiMatComplex.cs
+  uploadId: 665842

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e91d9b2d6a2a1ac499b65dce9e27df44
+timeCreated: 18446744011573954816
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaShapes Test Scene/Scripts/CameraLag.cs
+  uploadId: 665842

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 24abb87e230313545ae8f7d17833b4ba
+timeCreated: 18446744011573954816
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaFiers/Scripts/MegaShape/MegaShapePro/Shaders/MegaShapeBlendVCol.shader
+  uploadId: 665842

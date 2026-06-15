@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: ee6c9100c08c496459d528247a997636
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaFiers/Scripts/MegaFiers/Utils/MegaNearestPoint.cs
+  uploadId: 665842

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e6cdf17b22fac8a4386682a55309a617
+timeCreated: 18446744011573954816
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaShapes Test Scene/Scripts/MegaMovePlayer.cs
+  uploadId: 665842

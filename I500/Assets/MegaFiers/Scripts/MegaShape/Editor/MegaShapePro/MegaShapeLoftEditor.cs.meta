@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 28e046bf02ddd414cbab490093999f78
+timeCreated: 18446744011573954816
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 3640
+  packageName: Mega Shapes
+  packageVersion: 2.54
+  assetPath: Assets/MegaFiers/Scripts/MegaShape/Editor/MegaShapePro/MegaShapeLoftEditor.cs
+  uploadId: 665842

@@ -1,3 +1,5 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -9,6 +11,7 @@ public class PlayerController : MonoBehaviour
     public Rigidbody RB_playerPhysics;
     public Transform T_playerModel;
     public Transform T_cameraHook;
+    public TextMeshProUGUI TM_interactText;
     #endregion
     #region Input
     private inputClass Input = new inputClass();
@@ -17,6 +20,7 @@ public class PlayerController : MonoBehaviour
         public Vector2 V2_Move = new Vector2();
         public Vector2 V2_Look = new Vector2();
         public bool B_jump = false;
+        public bool B_interact = false;
     }
     private Vector3 v3_rotMove = new Vector3();
     private Vector3 q_rotLook = new Vector3();
@@ -40,10 +44,14 @@ public class PlayerController : MonoBehaviour
     public float F_lookSpeed = 10;
     public Vector2 V2_xLookBounds = new Vector2(-80, 80);
     #endregion
+    private PrometeoCarController _curVehicle = null;
+    private Interact _curInteract = null;
+    private Coroutine _interactCoyote = null;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         SetCursorLock(true);
+        InteractCheck();
     }
 
     void SetCursorLock(bool _locked)
@@ -59,12 +67,20 @@ public class PlayerController : MonoBehaviour
     {
         ModelMovement();
         CameraMovement();
+        if (!_curVehicle)
+            InteractInput();
     }
 
     void FixedUpdate()
     {
-        JumpHandler();
-        PhysicsMovement();
+        if (!_curVehicle)
+        {
+            JumpHandler();
+            PhysicsMovement();
+            InteractHandler();
+        }
+        else
+            CarHandler();
     }
     private void JumpHandler()
     {
@@ -89,7 +105,54 @@ public class PlayerController : MonoBehaviour
         else
             RB_playerPhysics.linearDamping = 0;
     }
-
+    void InteractInput()
+    {
+        if (_curInteract != null && Input.B_interact)
+        {
+            Input.B_interact = false;
+            _curVehicle = _curInteract.V_vehicle;
+        }
+    }
+    void InteractHandler()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hit, 5))
+        {
+            Interact temp;
+            if (hit.collider.TryGetComponent<Interact>(out temp))
+            {
+                if (_interactCoyote != null)
+                { StopCoroutine(_interactCoyote); _interactCoyote = null; }
+                InteractCheck(temp);
+            }
+            else InteractCoyoteTimeCheck();
+        }
+        else InteractCoyoteTimeCheck();
+    }
+    void InteractCheck(Interact _interact = null)
+    {
+        if (_interact == null)
+        {
+            _curInteract = _interact;
+            TM_interactText.text = "";
+        }
+        else if (_interact != _curInteract)
+        {
+            _curInteract = _interact;
+            TM_interactText.text = _curInteract.GetInteractString();
+        }
+    }
+    void InteractCoyoteTimeCheck()
+    {
+        if (_interactCoyote == null)
+            _interactCoyote = StartCoroutine(InteractCoyoteTime());
+    }
+    IEnumerator InteractCoyoteTime()
+    {
+        yield return new WaitForSecondsRealtime(0.1f);
+        InteractCheck(null);
+         _interactCoyote = null; 
+    }
     void PhysicsMovement()
     {
         v3_rotMove = Quaternion.Euler(q_rotPlayerModel) * new Vector3(Input.V2_Move.x, 0, Input.V2_Move.y) * 10 * F_moveSpeed * Time.fixedDeltaTime;
@@ -106,6 +169,14 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 limitedVel = flatVel.normalized * F_moveSpeed;
             RB_playerPhysics.linearVelocity = new Vector3(limitedVel.x, RB_playerPhysics.linearVelocity.y, limitedVel.z);
+        }
+    }
+    void CarHandler()
+    {
+        if (Input.B_interact)
+        {
+            Input.B_interact = false;
+            _curVehicle = null;
         }
     }
     void ModelMovement()
@@ -127,4 +198,5 @@ public class PlayerController : MonoBehaviour
     public void Input_Move(InputAction.CallbackContext cxt) { Input.V2_Move = cxt.ReadValue<Vector2>(); }
     public void Input_Look(InputAction.CallbackContext cxt) { Input.V2_Look = cxt.ReadValue<Vector2>(); }
     public void Input_Jump(InputAction.CallbackContext cxt) { Input.B_jump = cxt.performed; }
+    public void Input_Interact(InputAction.CallbackContext cxt) { Input.B_interact = cxt.performed; }
 }

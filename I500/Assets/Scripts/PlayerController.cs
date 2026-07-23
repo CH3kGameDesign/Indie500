@@ -173,8 +173,10 @@ public class PlayerController : MonoBehaviour
     }
     void CarHandler()
     {
+        _curVehicle.Input_Move(Input.V2_Move);
         if (Input.B_interact)
         {
+            _curVehicle.Input_Move(Vector2.zero);
             Input.B_interact = false;
             _curVehicle = null;
         }

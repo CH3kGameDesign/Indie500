@@ -769,13 +769,17 @@ public class PrometeoCarController : MonoBehaviour
       driftingAxis = 0f;
     }
   }
-  public void Input_Move (InputAction.CallbackContext cxt)
+  public void Input_Move(InputAction.CallbackContext cxt)
   {
     Vector2 _temp = cxt.ReadValue<Vector2>();
-    _inputForward = _temp.y > 0;
-    _inputBackward = _temp.y < 0;
-    _inputLeft = _temp.x < 0;
-    _inputRight = _temp.x > 0;
+    Input_Move(_temp);
+  }
+  public void Input_Move (Vector2 _move)
+  {
+    _inputForward = _move.y > 0;
+    _inputBackward = _move.y < 0;
+    _inputLeft = _move.x < 0;
+    _inputRight = _move.x > 0;
   }
   private bool _inputForward = false;
   public void Input_Forward (InputAction.CallbackContext cxt) { _inputForward = cxt.performed; }

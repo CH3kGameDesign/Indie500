@@ -65,7 +65,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ModelMovement();
         CameraMovement();
         if (!_curVehicle)
             InteractInput();
@@ -181,10 +180,6 @@ public class PlayerController : MonoBehaviour
             _curVehicle = null;
         }
     }
-    void ModelMovement()
-    {
-        T_playerModel.position = RB_playerPhysics.position;
-    }
     void CameraMovement()
     {
         q_rotLook += new Vector3(-Input.V2_Look.y, Input.V2_Look.x, 0) * F_lookSpeed * Time.deltaTime;
@@ -195,6 +190,21 @@ public class PlayerController : MonoBehaviour
 
         T_playerModel.localEulerAngles = q_rotPlayerModel;
         T_cameraHook.localEulerAngles = q_rotCameraHook;
+    }
+    ////////////////////NEEDS WORK
+    public void AdjustCameraOffset(PhysicsDouble_Surface _surface)
+    {
+        Transform _old = T_playerModel.parent;
+        Transform _new;
+        if (_surface == null) _new = transform;
+        else _new = _surface.T_visualModel;
+
+        Quaternion _offset = Quaternion.FromToRotation(_new.up, _old.up);
+        _offset *= Quaternion.FromToRotation(_new.forward, _old.forward);
+        
+        Vector3 _euler = _offset.eulerAngles;
+        q_rotLook.x += _euler.x;
+        q_rotLook.y += _euler.y;
     }
 
     public void Input_Move(InputAction.CallbackContext cxt) { Input.V2_Move = cxt.ReadValue<Vector2>(); }

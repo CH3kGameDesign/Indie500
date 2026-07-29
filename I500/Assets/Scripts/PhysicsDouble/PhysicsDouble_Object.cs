@@ -11,8 +11,13 @@ public class PhysicsDouble_Object : MonoBehaviour
     PhysicsDouble_Surface _curSurface = null;
     List<PhysicsDouble_Surface> _allSurfaces = new List<PhysicsDouble_Surface>();
 
-    float _timerCheck = 0;
     public void FixedUpdate()
+    {
+        BoundsCheck();
+    }
+
+    float _timerCheck = 0;
+    void BoundsCheck()
     {
         if (_curSurface != null)
         {
@@ -30,14 +35,12 @@ public class PhysicsDouble_Object : MonoBehaviour
     
     public void EnterSurface(PhysicsDouble_Surface _surface)
     {
-        Debug.Log("Enter");
         if (!_allSurfaces.Contains(_surface))
             _allSurfaces.Add(_surface);
         SetSurface();
     }
     public void ExitSurface(PhysicsDouble_Surface _surface)
     {
-        Debug.Log("Exit");
         if (_allSurfaces.Contains(_surface))
             _allSurfaces.Remove(_surface);
         SetSurface();

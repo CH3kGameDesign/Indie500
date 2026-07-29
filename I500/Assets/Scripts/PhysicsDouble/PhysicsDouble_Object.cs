@@ -11,14 +11,33 @@ public class PhysicsDouble_Object : MonoBehaviour
     PhysicsDouble_Surface _curSurface = null;
     List<PhysicsDouble_Surface> _allSurfaces = new List<PhysicsDouble_Surface>();
 
+    float _timerCheck = 0;
+    public void FixedUpdate()
+    {
+        if (_curSurface != null)
+        {
+            if (_timerCheck > 0.1f)
+            {
+                _timerCheck = 0;
+                if (!_curSurface.C_physicsBounds.bounds.Contains(RB_physics.transform.position))
+                    ExitSurface(_curSurface);
+            }
+            _timerCheck += Time.fixedDeltaTime;
+        }
+        else
+            _timerCheck = 0;
+    }
+    
     public void EnterSurface(PhysicsDouble_Surface _surface)
     {
+        Debug.Log("Enter");
         if (!_allSurfaces.Contains(_surface))
             _allSurfaces.Add(_surface);
         SetSurface();
     }
     public void ExitSurface(PhysicsDouble_Surface _surface)
     {
+        Debug.Log("Exit");
         if (_allSurfaces.Contains(_surface))
             _allSurfaces.Remove(_surface);
         SetSurface();
@@ -37,8 +56,8 @@ public class PhysicsDouble_Object : MonoBehaviour
         if (_curSurface == _surface)
             return;
         //Save Old Transform Parent
-        Transform _oldP = RB_physics.transform.parent;
-        Transform _newP;
+        Transform _oldVisualP = T_model.parent;
+        Transform _newVisualP;
         //Adjust Player Controller rotation offset to maintain consistent look position
         if (PC_player != null)
             PC_player.AdjustCameraOffset(_surface);
@@ -47,16 +66,16 @@ public class PhysicsDouble_Object : MonoBehaviour
         {
             T_model.parent = T_parent;
             RB_physics.transform.parent = T_parent;
-            _newP = T_parent;
+            _newVisualP = T_parent;
         }
         else
         {
             T_model.parent = _surface.T_visualModel;
             RB_physics.transform.parent = _surface.T_physicsModel;
-            _newP = _surface.T_physicsModel;
+            _newVisualP = _surface.T_visualModel;
         }
-        //Adjust Rigidbody Force Direction ////////////////////NEEDS WORK
-        Quaternion _offset = _newP.rotation * Quaternion.Inverse(_oldP.rotation);
+        //Adjust Rigidbody Force Direction
+        Quaternion _offset = _oldVisualP.rotation * Quaternion.Inverse(_newVisualP.rotation);
         RB_physics.linearVelocity = _offset * RB_physics.linearVelocity;
 
         //Adjust Physics Position to remain consistent

@@ -1,5 +1,6 @@
 using System.Collections;
 using TMPro;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -184,26 +185,23 @@ public class PlayerController : MonoBehaviour
     {
         q_rotLook += new Vector3(-Input.V2_Look.y, Input.V2_Look.x, 0) * F_lookSpeed * Time.deltaTime;
         q_rotLook.x = Mathf.Clamp(q_rotLook.x, V2_xLookBounds.x, V2_xLookBounds.y);
-
         q_rotPlayerModel.y = q_rotLook.y;
         q_rotCameraHook.x = q_rotLook.x;
-
-        T_playerModel.localEulerAngles = q_rotPlayerModel;
-        T_cameraHook.localEulerAngles = q_rotCameraHook;
+        Quaternion _playerRot = Quaternion.Lerp(T_playerModel.localRotation, Quaternion.Euler(q_rotPlayerModel), Time.deltaTime * 20);
+        Quaternion _cameraRot = Quaternion.Lerp(T_cameraHook.localRotation, Quaternion.Euler(q_rotCameraHook), Time.deltaTime * 20);
+        T_playerModel.localRotation = _playerRot;
+        T_cameraHook.localRotation = _cameraRot;
     }
-    ////////////////////NEEDS WORK
     public void AdjustCameraOffset(PhysicsDouble_Surface _surface)
     {
         Transform _old = T_playerModel.parent;
         Transform _new;
         if (_surface == null) _new = transform;
         else _new = _surface.T_visualModel;
-
-        Quaternion _offset = Quaternion.FromToRotation(_new.up, _old.up);
-        _offset *= Quaternion.FromToRotation(_new.forward, _old.forward);
         
+        Quaternion _offset = _old.rotation * Quaternion.Inverse(_new.rotation);
+
         Vector3 _euler = _offset.eulerAngles;
-        q_rotLook.x += _euler.x;
         q_rotLook.y += _euler.y;
     }
 

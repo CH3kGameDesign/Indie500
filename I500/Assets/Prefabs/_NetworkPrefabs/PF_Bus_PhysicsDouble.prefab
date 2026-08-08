@@ -26233,7 +26233,7 @@ GameObject:
   - component: {fileID: 1625370791842111595}
   - component: {fileID: 510953795509248849}
   - component: {fileID: 8128079727223866168}
-  - component: {fileID: 3656859639485351578}
+  - component: {fileID: 7343072262162716343}
   m_Layer: 0
   m_Name: DriversSeat
   m_TagString: Untagged
@@ -26600,7 +26600,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
---- !u!114 &3656859639485351578
+--- !u!114 &7343072262162716343
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -26609,9 +26609,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8503316461122543912}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed45213ae040455488c51989348e4ece, type: 3}
+  m_Script: {fileID: 11500000, guid: db571ada18d1090489d6afa981ba5aa6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Interact
+  m_EditorClassIdentifier: Assembly-CSharp::VehicleSeat
   S_verb: 'Drive [0]'
   S_name: Bus
   V_vehicle: {fileID: 2132505936621953802}

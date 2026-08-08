@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     public Rigidbody RB_playerPhysics;
     public Transform T_playerModel;
     public Transform T_cameraHook;
+    public Transform T_pickupHook;
     public TextMeshProUGUI TM_interactText;
     #endregion
     #region Input
@@ -46,6 +47,7 @@ public class PlayerController : MonoBehaviour
     public Vector2 V2_xLookBounds = new Vector2(-80, 80);
     #endregion
     private PrometeoCarController _curVehicle = null;
+    private Pickup _curPickup = null;
     private Interact _curInteract = null;
     private Coroutine _interactCoyote = null;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -107,11 +109,30 @@ public class PlayerController : MonoBehaviour
     }
     void InteractInput()
     {
+        if (_curPickup != null)
+        {
+            ThrowHandler();
+            return;
+        }
         if (_curInteract != null && Input.B_interact)
         {
             Input.B_interact = false;
-            _curVehicle = _curInteract.V_vehicle;
+            _curInteract.PlayerInteract(this);
         }
+    }
+    void ThrowHandler()
+    {
+        if (Input.B_interact)
+        {
+            Input.B_interact = false;
+            _curPickup.OnDropped(T_cameraHook.transform.forward * 10);
+            _curPickup = null;
+        }
+    }
+    public void SetVehicle(PrometeoCarController _car) { _curVehicle = _car; }
+    public void SetPickup(Pickup _pickup)
+    {
+        _curPickup = _pickup;
     }
     void InteractHandler()
     {
@@ -131,9 +152,11 @@ public class PlayerController : MonoBehaviour
     }
     void InteractCheck(Interact _interact = null)
     {
-        if (_interact == null)
+        bool _valid = _interact != null;
+        if (_valid) _valid = _interact.B_canInteract;
+        if (!_valid)
         {
-            _curInteract = _interact;
+            _curInteract = null;
             TM_interactText.text = "";
         }
         else if (_interact != _curInteract)

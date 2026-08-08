@@ -8,6 +8,7 @@ public class PhysicsDouble_Object : MonoBehaviour
     public Transform T_parent;
     public PlayerController PC_player;
 
+    private bool _updateSurface = true;
     PhysicsDouble_Surface _curSurface = null;
     List<PhysicsDouble_Surface> _allSurfaces = new List<PhysicsDouble_Surface>();
 
@@ -32,7 +33,23 @@ public class PhysicsDouble_Object : MonoBehaviour
         else
             _timerCheck = 0;
     }
-    
+    public void OnPickedUp(Transform _transform)
+    {
+        _updateSurface = false;
+        RB_physics.isKinematic = true;
+        T_model.parent = _transform;
+        T_model.localPosition = Vector3.zero;
+        T_model.localRotation = Quaternion.identity;
+        RB_physics.transform.parent = _transform;
+        RB_physics.transform.localPosition = Vector3.zero;
+        RB_physics.transform.localRotation = Quaternion.identity;
+    }
+    public void OnDropped()
+    {
+        _updateSurface = true;
+        RB_physics.isKinematic = false;
+        SetSurface(true);
+    }
     public void EnterSurface(PhysicsDouble_Surface _surface)
     {
         if (!_allSurfaces.Contains(_surface))
@@ -46,17 +63,18 @@ public class PhysicsDouble_Object : MonoBehaviour
         SetSurface();
     }
 
-    void SetSurface()
+    void SetSurface(bool _override = false)
     {
+        if (_updateSurface == false && _override == false) return;
         if (_allSurfaces.Count > 0)
-            SetSurface(_allSurfaces[0]);
+            SetSurfaceSpecific(_allSurfaces[0], _override);
         else
-            SetSurface(null);
+            SetSurfaceSpecific(null, _override);
     }
-    void SetSurface(PhysicsDouble_Surface _surface = null)
+    void SetSurfaceSpecific(PhysicsDouble_Surface _surface = null, bool _override = false)
     {
         //Ignore if target surface == current
-        if (_curSurface == _surface)
+        if (_curSurface == _surface && _override == false)
             return;
         //Save Old Transform Parent
         Transform _oldVisualP = T_model.parent;

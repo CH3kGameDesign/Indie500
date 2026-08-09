@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
         public Vector2 V2_Look = new Vector2();
         public bool B_jump = false;
         public bool B_interact = false;
+        public bool B_sprint = false;
+        public bool B_fire = false;
     }
     private Vector3 v3_rotMove = new Vector3();
     private Vector3 q_rotLook = new Vector3();
@@ -34,6 +36,7 @@ public class PlayerController : MonoBehaviour
     #region Movement
     [Header("Movement")]
     public float F_moveSpeed = 10;
+    public float F_sprintMultiplier = 1.5f;
     public float F_airMultiplier = 2f;
     public float F_groundDrag = 10;
     public float F_jumpForce = 10;
@@ -120,13 +123,25 @@ public class PlayerController : MonoBehaviour
             _curInteract.PlayerInteract(this);
         }
     }
+    private bool _aiming = false;
     void ThrowHandler()
     {
         if (Input.B_interact)
         {
             Input.B_interact = false;
+            _curPickup.OnDropped(Vector3.zero);
+            _curPickup = null;
+            _aiming = false;
+        }
+        else if (Input.B_fire)
+        {
+            _aiming = true;
+        }
+        else if (_aiming)
+        {
             _curPickup.OnDropped(T_cameraHook.transform.forward * 10);
             _curPickup = null;
+            _aiming = false;
         }
     }
     public void SetVehicle(PrometeoCarController _car) { _curVehicle = _car; }
@@ -180,6 +195,7 @@ public class PlayerController : MonoBehaviour
     {
         v3_rotMove = Quaternion.Euler(q_rotPlayerModel) * new Vector3(Input.V2_Move.x, 0, Input.V2_Move.y) * 10 * F_moveSpeed * Time.fixedDeltaTime;
         if (!b_grounded) v3_rotMove *= F_airMultiplier;
+        else if (Input.B_sprint) v3_rotMove *= F_sprintMultiplier;
         RB_playerPhysics.AddForce(v3_rotMove, ForceMode.Impulse);
         SpeedControl();
     }
@@ -187,8 +203,10 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 flatVel = new Vector3(RB_playerPhysics.linearVelocity.x, 0f, RB_playerPhysics.linearVelocity.z);
 
+        float _moveSpeed = F_moveSpeed;
+        if (Input.B_sprint) _moveSpeed *= F_sprintMultiplier;
         // limit velocity if needed
-        if(flatVel.magnitude > F_moveSpeed)
+        if(flatVel.magnitude > _moveSpeed)
         {
             Vector3 limitedVel = flatVel.normalized * F_moveSpeed;
             RB_playerPhysics.linearVelocity = new Vector3(limitedVel.x, RB_playerPhysics.linearVelocity.y, limitedVel.z);
@@ -232,4 +250,6 @@ public class PlayerController : MonoBehaviour
     public void Input_Look(InputAction.CallbackContext cxt) { Input.V2_Look = cxt.ReadValue<Vector2>(); }
     public void Input_Jump(InputAction.CallbackContext cxt) { Input.B_jump = cxt.performed; }
     public void Input_Interact(InputAction.CallbackContext cxt) { Input.B_interact = cxt.performed; }
+    public void Input_Sprint(InputAction.CallbackContext cxt) { Input.B_sprint = cxt.performed; }
+    public void Input_Fire(InputAction.CallbackContext cxt) { Input.B_fire = cxt.performed; }
 }

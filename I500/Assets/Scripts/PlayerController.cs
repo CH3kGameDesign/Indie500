@@ -39,10 +39,13 @@ public class PlayerController : MonoBehaviour
     public float F_sprintMultiplier = 1.5f;
     public float F_airMultiplier = 2f;
     public float F_groundDrag = 10;
+    [Space(10)]
     public float F_jumpForce = 10;
     public float F_jumpTimer = 0.1f;
     public float F_playerHeight = 1f;
     public LayerMask LM_ground = new LayerMask();
+    [Space(10)]
+    public float F_throwForce = 10f;
     #endregion
     #region Camera
     [Header("Camera")]
@@ -139,7 +142,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (_aiming)
         {
-            _curPickup.OnDropped(T_cameraHook.transform.forward * 10);
+            _curPickup.OnDropped(T_cameraHook.transform.forward * F_throwForce);
             _curPickup = null;
             _aiming = false;
         }

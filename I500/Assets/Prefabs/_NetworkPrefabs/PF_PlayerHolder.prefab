@@ -112,6 +112,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4692699716384784349}
   - component: {fileID: 287516535323755153}
+  - component: {fileID: 6109810329896222106}
+  - component: {fileID: 7205295455016853791}
   m_Layer: 7
   m_Name: PlayerModel
   m_TagString: Untagged
@@ -168,6 +170,46 @@ MonoBehaviour:
   _characterControllerPatch: 0
   _ownerAuth: 1
   _interpolationTiming: 0
+--- !u!136 &6109810329896222106
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200001871349754299}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7205295455016853791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200001871349754299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44a098297a30c774c85d658bf6e0f1bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Pickup
+  S_verb: 'Pickup [0]'
+  S_name: Player
+  B_canInteract: 1
+  PD_Object: {fileID: 2979162461689231296}
+  C_collider: {fileID: 6109810329896222106}
 --- !u!1 &1335212283943482519
 GameObject:
   m_ObjectHideFlags: 0
@@ -515,6 +557,7 @@ MonoBehaviour:
   LM_ground:
     serializedVersion: 2
     m_Bits: 1
+  F_throwForce: 10
   F_lookSpeed: 20
   V2_xLookBounds: {x: -80, y: 80}
 --- !u!114 &4894744119892394103
@@ -877,7 +920,7 @@ GameObject:
   - component: {fileID: 2790134857605174518}
   - component: {fileID: 3330307622424590263}
   - component: {fileID: 2979162461689231296}
-  - component: {fileID: 4540320406253329332}
+  - component: {fileID: 2672594541706240767}
   m_Layer: 6
   m_Name: PlayerPhysics
   m_TagString: Untagged
@@ -966,7 +1009,7 @@ MonoBehaviour:
   RB_physics: {fileID: 2790134857605174518}
   T_parent: {fileID: 2768526927218214470}
   PC_player: {fileID: 803690042757787841}
---- !u!114 &4540320406253329332
+--- !u!114 &2672594541706240767
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

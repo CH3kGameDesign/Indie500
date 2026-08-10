@@ -2078,6 +2078,7 @@ GameObject:
   - component: {fileID: 7316200618085065928}
   - component: {fileID: 2132505936621953802}
   - component: {fileID: 4037118166057691691}
+  - component: {fileID: 2928286224932940614}
   m_Layer: 0
   m_Name: PF_VisualModel
   m_TagString: Untagged
@@ -2222,6 +2223,37 @@ MonoBehaviour:
   _velocityStopThreshold: 0.001
   _debugGizmos: 0
   _debugTextOffset: 2
+--- !u!114 &2928286224932940614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 796658492452560564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 817fe5016bd0a2a49a95b6eb338bb132, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PurrNet.Runtime::PurrNet.NetworkTransform
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  _syncPosition: 2
+  _syncRotation: 2
+  _syncScale: 1
+  _syncParent: 1
+  _interpolateSettings: 7
+  _minBufferSize: 1
+  _maxBufferSize: 2
+  _characterControllerPatch: 0
+  _ownerAuth: 1
+  _interpolationTiming: 0
 --- !u!1 &798067794005746607
 GameObject:
   m_ObjectHideFlags: 0
@@ -26614,6 +26646,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VehicleSeat
   S_verb: 'Drive [0]'
   S_name: Bus
+  B_canInteract: 1
   V_vehicle: {fileID: 2132505936621953802}
 --- !u!1 &8563855936738235243
 GameObject:

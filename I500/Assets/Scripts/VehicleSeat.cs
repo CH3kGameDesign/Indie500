@@ -8,11 +8,11 @@ public class VehicleSeat : Interact
     {
         base.PlayerInteract(_player);
         _player.SetVehicle(V_vehicle);
-        B_canInteract = false;
+        B_canInteract.value = false;
     }
 
     public void PlayerExit()
     {
-        B_canInteract = true;
+        B_canInteract.value = true;
     }
 }

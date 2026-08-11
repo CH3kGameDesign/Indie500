@@ -12,11 +12,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using PurrNet;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class PrometeoCarController : MonoBehaviour
+public class PrometeoCarController : NetworkBehaviour
 {
 
     //CAR SETUP
@@ -774,6 +775,7 @@ public class PrometeoCarController : MonoBehaviour
     Vector2 _temp = cxt.ReadValue<Vector2>();
     Input_Move(_temp);
   }
+  [ServerRpc(requireOwnership:false)]
   public void Input_Move (Vector2 _move)
   {
     _inputForward = _move.y > 0;

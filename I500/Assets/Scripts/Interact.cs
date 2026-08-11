@@ -1,10 +1,11 @@
+using PurrNet;
 using UnityEngine;
 
-public class Interact : MonoBehaviour
+public class Interact : NetworkBehaviour
 {
     public string S_verb = "Drive [0]";
     public string S_name = "Bus";
-    [HideInInspector] public bool B_canInteract = true;
+    [HideInInspector] public SyncVar<bool> B_canInteract = new SyncVar<bool>(true);
 
     public string GetInteractString()
     {

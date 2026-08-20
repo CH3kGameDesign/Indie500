@@ -7,7 +7,7 @@ public class VehicleSeat : Interact
     public override void PlayerInteract(PlayerController _player)
     {
         base.PlayerInteract(_player);
-        _player.SetVehicle(V_vehicle);
+        _player.SetVehicle(this);
         B_canInteract.value = false;
     }
 

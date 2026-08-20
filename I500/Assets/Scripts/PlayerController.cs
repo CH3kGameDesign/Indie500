@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
     public float F_lookSpeed = 10;
     public Vector2 V2_xLookBounds = new Vector2(-80, 80);
     #endregion
-    private PrometeoCarController _curVehicle = null;
+    private VehicleSeat _curVehicle = null;
     private Pickup _curPickup = null;
     private Interact _curInteract = null;
     private Coroutine _interactCoyote = null;
@@ -147,7 +147,7 @@ public class PlayerController : MonoBehaviour
             _aiming = false;
         }
     }
-    public void SetVehicle(PrometeoCarController _car) { _curVehicle = _car; }
+    public void SetVehicle(VehicleSeat _seat) { _curVehicle = _seat; }
     public void SetPickup(Pickup _pickup)
     {
         _curPickup = _pickup;
@@ -217,10 +217,11 @@ public class PlayerController : MonoBehaviour
     }
     void CarHandler()
     {
-        _curVehicle.Input_Move(Input.V2_Move);
+        _curVehicle.V_vehicle.Input_Move(Input.V2_Move);
         if (Input.B_interact)
         {
-            _curVehicle.Input_Move(Vector2.zero);
+            _curVehicle.V_vehicle.Input_Move(Vector2.zero);
+            _curVehicle.PlayerExit();
             Input.B_interact = false;
             _curVehicle = null;
         }

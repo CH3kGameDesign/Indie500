@@ -1,5 +1,6 @@
 using System.Collections;
 using TMPro;
+using Unity.Cinemachine;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,6 +11,9 @@ public class PlayerController : MonoBehaviour
     #region References
     [Header("References")]
     public Rigidbody RB_playerPhysics;
+    public Animator A_model;
+    public CinemachineCamera CM_camera;
+    public Transform T_playerModelHolder;
     public Transform T_playerModel;
     public Transform T_cameraHook;
     public Transform T_pickupHook;
@@ -22,16 +26,29 @@ public class PlayerController : MonoBehaviour
         public Vector2 V2_Move = new Vector2();
         public Vector2 V2_Look = new Vector2();
         public bool B_jump = false;
+        public bool B_jumpHeld = false;
         public bool B_interact = false;
         public bool B_sprint = false;
+        public bool B_crouch = false;
         public bool B_fire = false;
     }
     private Vector3 v3_rotMove = new Vector3();
     private Vector3 q_rotLook = new Vector3();
     private Vector3 q_rotCameraHook = new Vector3();
     private Vector3 q_rotPlayerModel = new Vector3();
-    private bool b_grounded = false;
+    [HideInInspector] public bool b_grounded = false;
+    [HideInInspector] public bool b_groundPound = false;
+    [HideInInspector] public bool b_crouching = false;
+    [HideInInspector] public bool b_sprinting = false;
+    [HideInInspector] public bool b_sliding = false;
+    [HideInInspector] public float f_sprintHeld = 0;
     private bool b_canJump = true;
+    private bool b_canDash = true;
+    private bool b_wallRunning = false;
+    private bool b_dashing = false;
+    private bool b_canWallRun = true;
+    private bool b_wallRunLeft = false;
+    private bool b_wallRunRight = false;
     #endregion
     #region Movement
     [Header("Movement")]
@@ -40,8 +57,25 @@ public class PlayerController : MonoBehaviour
     public float F_airMultiplier = 2f;
     public float F_groundDrag = 10;
     [Space(10)]
-    public float F_jumpForce = 10;
+    public float F_wallRunCheckDistance = 0.5f;
+    public float F_wallRunStickiness = 100f;
+    public float F_wallRun_OutJumpForce = 5;
+    private Collider wallHit_Last;
+    private RaycastHit wallHit_Left;
+    private RaycastHit wallHit_Right;
+    [Space(10)]
+    public float F_jumpForce = 5;
+    public float F_crouchJumpForce = 7;
+    public float F_groundPoundForce = 7;
     public float F_jumpTimer = 0.1f;
+    public int I_midAirJumps = 1;
+    private int _midAirJumpCounter = 0;
+    private Vector3 v3_slideDirection = Vector3.zero;
+    public float F_slideTimer = 1f;
+    public float F_dashForce = 5;
+    public float F_dashTimer = 0.2f;
+    public int I_midAirDashes = 1;
+    private int _midAirDashCounter = 0;
     public float F_playerHeight = 1f;
     public LayerMask LM_ground = new LayerMask();
     [Space(10)]
@@ -51,6 +85,16 @@ public class PlayerController : MonoBehaviour
     [Header("Camera")]
     public float F_lookSpeed = 10;
     public Vector2 V2_xLookBounds = new Vector2(-80, 80);
+    public cameraJuiceClass CameraJuice = new cameraJuiceClass();
+    [System.Serializable]
+    public class cameraJuiceClass
+    {
+        public float FOV_base = 60f;
+        public float FOV_sprint = 70f;
+        public float FOV_crouch = 50f;
+        public float FOV_groundPound = 40f;
+        public float Dutch_wallRun = 10f;
+    }
     #endregion
     private VehicleSeat _curVehicle = null;
     private Pickup _curPickup = null;
@@ -75,8 +119,25 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         CameraMovement();
+        CameraJuiceHandler();
+        AnimationUpdate();
         if (!_curVehicle)
             InteractInput();
+    }
+    Vector2 v2_animMove;
+    void AnimationUpdate()
+    {
+        Vector2 _input = Input.V2_Move;
+        if (b_sprinting)
+            _input.y = 2;
+        v2_animMove = Vector2.Lerp(v2_animMove, _input, Time.deltaTime / 0.25f);
+        A_model.SetFloat("posX", v2_animMove.x);
+        A_model.SetFloat("posY", v2_animMove.y);
+        A_model.SetBool("Crouching", b_crouching);
+        A_model.SetBool("Moving", v2_animMove.magnitude > 0.1f);
+        A_model.SetBool("InAir", !b_grounded);
+        A_model.SetBool("WallRunLeft", b_wallRunLeft);
+        A_model.SetBool("WallRunRight", b_wallRunRight);
     }
 
     void FixedUpdate()
@@ -84,6 +145,9 @@ public class PlayerController : MonoBehaviour
         if (!_curVehicle)
         {
             JumpHandler();
+            SprintHandler();
+            WallRunHandler();
+            CrouchHandler();
             PhysicsMovement();
             InteractHandler();
         }
@@ -93,26 +157,246 @@ public class PlayerController : MonoBehaviour
     private void JumpHandler()
     {
         GroundCheck();
-        if(b_canJump && b_grounded)
+        if (Input.B_jump)
         {
-            if (Input.B_jump)
+            if (b_canJump)
             {
-                b_canJump = false;
-                RB_playerPhysics.linearVelocity = new Vector3(RB_playerPhysics.linearVelocity.x, 0f, RB_playerPhysics.linearVelocity.z);
-                RB_playerPhysics.AddForce(transform.up * F_jumpForce, ForceMode.Impulse);
-                Invoke(nameof(ResetJump), F_jumpTimer);
+                if (b_grounded)
+                    Jump();
+                else if (!Input.B_jumpHeld)
+                {
+                    if (b_wallRunning)
+                        Jump_WallRun();
+                    else if (_midAirJumpCounter < I_midAirJumps && !b_groundPound)
+                        Jump_MidAir();
+                }
+            }
+            Input.B_jumpHeld = true;
+        }
+        else
+            Input.B_jumpHeld = false;
+    }
+    private void SprintHandler()
+    {
+        if (b_sprinting)
+        {
+            if (Input.V2_Move.magnitude < 0.1f && !Input.B_sprint)
+                b_sprinting = false;
+        }
+        if (Input.B_sprint)
+        {
+            b_sprinting = true;
+            if (f_sprintHeld == 0)
+            {
+                if (b_canDash)
+                {
+                    if (!b_grounded && !b_wallRunning && _midAirDashCounter < I_midAirDashes)
+                        Dash_MidAir();
+                }
+            }
+            f_sprintHeld += Time.deltaTime;
+        }
+        else
+            f_sprintHeld = 0;
+    }
+    private void Dash_MidAir()
+    {
+        b_dashing = true;
+        RB_playerPhysics.linearVelocity = new Vector3(RB_playerPhysics.linearVelocity.x, 0f, RB_playerPhysics.linearVelocity.z);
+        RB_playerPhysics.useGravity = false;
+        b_canDash = false;
+        b_canJump = false;
+        Vector3 _force = T_playerModelHolder.forward * F_dashForce;
+        RB_playerPhysics.AddForce(_force, ForceMode.Impulse);
+        Invoke(nameof(ResetDash), F_dashTimer);
+        _midAirDashCounter++;
+    }
+    private void Jump()
+    {
+        A_model.Play("Jump");
+        b_canJump = false;
+        RB_playerPhysics.linearVelocity = new Vector3(RB_playerPhysics.linearVelocity.x, 0f, RB_playerPhysics.linearVelocity.z);
+        Vector3 _force = transform.up * (b_crouching ? F_crouchJumpForce : F_jumpForce);
+        RB_playerPhysics.AddForce(_force, ForceMode.Impulse);
+        Invoke(nameof(ResetJump), F_jumpTimer);
+    }
+    private void Jump_MidAir()
+    {
+        Jump();
+        _midAirJumpCounter++;
+    }
+    public void BouncePad()
+    {
+        b_canJump = false;
+        Invoke(nameof(ResetJump), F_jumpTimer);
+    }
+    private void Jump_WallRun()
+    {
+        Jump();
+        b_canWallRun = false;
+        WallRunEnd();
+        Vector3 wallNormal = b_wallRunRight ? wallHit_Right.normal : wallHit_Left.normal;
+        RB_playerPhysics.AddForce(wallNormal * F_wallRun_OutJumpForce, ForceMode.Impulse);
+        Invoke(nameof(ResetWallRun), F_jumpTimer);
+    }
+    void ResetWallRun() { b_canWallRun = true; }
+    Coroutine CrouchCoroutine = null;
+    private void CrouchHandler()
+    {
+        if (Input.B_crouch)
+        {
+            if (!b_crouching)
+            {
+                //Start Crouching
+                if (CrouchCoroutine != null)
+                    StopCoroutine(CrouchCoroutine);
+                CrouchCoroutine = StartCoroutine(Crouch(true));
+                //Ground Pound
+                if (b_grounded && b_sprinting)
+                {
+                    Slide();
+                }
+                if (!b_grounded && !b_wallRunning)
+                {
+                    GroundPound();
+                }
+            }
+        }
+        else if (b_crouching && !b_sliding)
+        {
+            if (CanStandUp())
+            {
+                //Stop Crouching
+                if (CrouchCoroutine != null)
+                    StopCoroutine(CrouchCoroutine);
+                CrouchCoroutine = StartCoroutine(Crouch(false));
             }
         }
     }
+    private void Slide()
+    {
+        if (!b_sliding)
+        {
+            b_sliding = true;
+            Invoke(nameof(ResetSlide), F_slideTimer);
+        }
+    }
+    private void GroundPound()
+    {
+        if (!b_groundPound)
+        {
+            b_groundPound = true;
+            RB_playerPhysics.linearVelocity = new Vector3(RB_playerPhysics.linearVelocity.x, 0f, RB_playerPhysics.linearVelocity.z);
+            Vector3 _force = -transform.up * F_groundPoundForce;
+            RB_playerPhysics.AddForce(_force, ForceMode.Impulse);
+        }
+    }
+    private bool CanStandUp()
+    {
+        RaycastHit hit;
+        return !Physics.SphereCast(RB_playerPhysics.position, 0.2f, Vector3.up, out hit, F_playerHeight * 0.5f + 0.1f, LM_ground);
+    }
+    IEnumerator Crouch(bool _crouching = false, float _time = 0.1f)
+    {
+        b_crouching = _crouching;
+        float _timer = 0;
+        Vector3 _startScale = RB_playerPhysics.transform.localScale;
+        Vector3 _tarScale = _crouching ? new Vector3(1, 0.3f, 1) : new Vector3(1, 1, 1);
+        while (_timer <= 1)
+        {
+            _timer += Time.deltaTime / _time;
+            RB_playerPhysics.transform.localScale = Vector3.Lerp(_startScale, _tarScale, _timer);
+            yield return new WaitForEndOfFrame();
+        }
+        RB_playerPhysics.transform.localScale = _tarScale;
+    }
+    private void WallRunHandler()
+    {
+        WallRunCheck();
+
+        if (!b_grounded && b_canWallRun && Input.V2_Move.y > 0.5f)
+        {
+            if (b_wallRunRight || b_wallRunLeft)
+            {
+                if (!b_wallRunning)
+                    WallRunStart();
+
+                Vector3 wallNormal = b_wallRunRight ? wallHit_Right.normal : wallHit_Left.normal;
+                RB_playerPhysics.AddForce(-wallNormal * F_wallRunStickiness, ForceMode.Force);
+            }
+            else if (b_wallRunning)
+                WallRunEnd();
+        }
+        else if (b_wallRunning)
+            WallRunEnd();
+    }
+    private void WallRunCheck()
+    {
+        //Left Check
+        if (Physics.Raycast(RB_playerPhysics.transform.position, -T_playerModelHolder.transform.right, out wallHit_Left, F_wallRunCheckDistance))
+        {
+            if (wallHit_Left.collider != wallHit_Last || b_wallRunLeft)
+            {
+                b_wallRunLeft = wallHit_Left.collider.tag == "WallRun";
+                if (b_wallRunLeft)
+                    wallHit_Last = wallHit_Left.collider;
+            }
+            else
+                b_wallRunLeft = false;
+        }
+        else
+            b_wallRunLeft = false;
+        //Right Check
+        if (Physics.Raycast(RB_playerPhysics.transform.position, T_playerModelHolder.transform.right, out wallHit_Right, F_wallRunCheckDistance))
+        {
+            if (wallHit_Right.collider != wallHit_Last || b_wallRunRight)
+            {
+                b_wallRunRight = wallHit_Right.collider.tag == "WallRun";
+                if (b_wallRunRight)
+                    wallHit_Last = wallHit_Right.collider;
+            }
+            else
+                b_wallRunLeft = false;
+        }
+        else
+            b_wallRunRight = false;
+    }
+    private void WallRunStart()
+    {
+        b_wallRunning = true;
+        RB_playerPhysics.useGravity = false;
+        RB_playerPhysics.linearVelocity = new Vector3(RB_playerPhysics.linearVelocity.x, 0, RB_playerPhysics.linearVelocity.z);
+        _midAirJumpCounter = 0;
+        _midAirDashCounter = 0;
+    }
+    private void WallRunEnd()
+    {
+        b_wallRunning = false;
+        b_wallRunLeft = false;
+        b_wallRunRight = false;
+        RB_playerPhysics.useGravity = true;
+    }
     private void ResetJump() { b_canJump = true; }
+    private void ResetDash() { b_dashing = false; b_canDash = true; b_canJump = true; RB_playerPhysics.useGravity = true; }
+    private void ResetSlide() { b_sliding = false; }
     private void GroundCheck()
     {
         b_grounded = Physics.Raycast(RB_playerPhysics.position, Vector3.down, F_playerHeight * 0.5f + 0.1f, LM_ground);
         if (b_grounded)
+        {
             RB_playerPhysics.linearDamping = F_groundDrag;
+            wallHit_Last = null;
+            _midAirJumpCounter = 0;
+            _midAirDashCounter = 0;
+            Invoke(nameof(DisableGroundPound), 0.2f);
+        }
         else
+        {
             RB_playerPhysics.linearDamping = 0;
+            ResetSlide();
+        }
     }
+    void DisableGroundPound() { b_groundPound = false; }
     void InteractInput()
     {
         if (_curPickup != null)
@@ -198,7 +482,9 @@ public class PlayerController : MonoBehaviour
     {
         v3_rotMove = Quaternion.Euler(q_rotPlayerModel) * new Vector3(Input.V2_Move.x, 0, Input.V2_Move.y) * 10 * F_moveSpeed * Time.fixedDeltaTime;
         if (!b_grounded) v3_rotMove *= F_airMultiplier;
-        else if (Input.B_sprint) v3_rotMove *= F_sprintMultiplier;
+        if (b_sprinting || b_wallRunning) v3_rotMove *= F_sprintMultiplier;
+        if (b_sliding) v3_rotMove = v3_slideDirection;
+        else v3_slideDirection = v3_rotMove;
         RB_playerPhysics.AddForce(v3_rotMove, ForceMode.Impulse);
         SpeedControl();
     }
@@ -207,9 +493,10 @@ public class PlayerController : MonoBehaviour
         Vector3 flatVel = new Vector3(RB_playerPhysics.linearVelocity.x, 0f, RB_playerPhysics.linearVelocity.z);
 
         float _moveSpeed = F_moveSpeed;
-        if (Input.B_sprint) _moveSpeed *= F_sprintMultiplier;
+        if (b_sprinting) _moveSpeed *= F_sprintMultiplier;
+        if (!b_grounded) _moveSpeed *= F_airMultiplier;
         // limit velocity if needed
-        if(flatVel.magnitude > _moveSpeed)
+        if(flatVel.magnitude > _moveSpeed && !b_dashing && !b_sliding)
         {
             Vector3 limitedVel = flatVel.normalized * F_moveSpeed;
             RB_playerPhysics.linearVelocity = new Vector3(limitedVel.x, RB_playerPhysics.linearVelocity.y, limitedVel.z);
@@ -232,14 +519,37 @@ public class PlayerController : MonoBehaviour
         q_rotLook.x = Mathf.Clamp(q_rotLook.x, V2_xLookBounds.x, V2_xLookBounds.y);
         q_rotPlayerModel.y = q_rotLook.y;
         q_rotCameraHook.x = q_rotLook.x;
-        Quaternion _playerRot = Quaternion.Lerp(T_playerModel.localRotation, Quaternion.Euler(q_rotPlayerModel), Time.deltaTime * 20);
+        Quaternion _playerRot = Quaternion.Lerp(T_playerModelHolder.localRotation, Quaternion.Euler(q_rotPlayerModel), Time.deltaTime * 20);
         Quaternion _cameraRot = Quaternion.Lerp(T_cameraHook.localRotation, Quaternion.Euler(q_rotCameraHook), Time.deltaTime * 20);
-        T_playerModel.localRotation = _playerRot;
+        T_playerModelHolder.localRotation = _playerRot;
         T_cameraHook.localRotation = _cameraRot;
+        //3rd Person Model Rot
+        if (Input.V2_Move.magnitude > 0.05f)
+        {
+            Quaternion _playerModelRot = Quaternion.Lerp(T_playerModel.localRotation, Quaternion.LookRotation(new Vector3(Input.V2_Move.y, 0, -Input.V2_Move.x), Vector3.up), Time.deltaTime * 20);
+            T_playerModel.localRotation = _playerModelRot;
+        }
+    }
+    
+    void CameraJuiceHandler()
+    {
+        float tarFieldOfView = CameraJuice.FOV_base;
+        float tarDutch = 0;
+        float lerpSpeed = Time.deltaTime * 10;
+        if (b_sprinting || b_wallRunning) { tarFieldOfView = CameraJuice.FOV_sprint; }
+        if (b_groundPound) { tarFieldOfView = CameraJuice.FOV_groundPound; }
+        if (b_grounded && b_crouching) { tarFieldOfView = CameraJuice.FOV_crouch; }
+        if (b_wallRunning)
+        {
+            if (b_wallRunRight) { tarDutch = CameraJuice.Dutch_wallRun; }
+            else { tarDutch = -CameraJuice.Dutch_wallRun; }
+        }
+        CM_camera.Lens.FieldOfView = Mathf.Lerp(CM_camera.Lens.FieldOfView, tarFieldOfView, lerpSpeed);
+        CM_camera.Lens.Dutch = Mathf.Lerp(CM_camera.Lens.Dutch, tarDutch, lerpSpeed);
     }
     public void AdjustCameraOffset(PhysicsDouble_Surface _surface)
     {
-        Transform _old = T_playerModel.parent;
+        Transform _old = T_playerModelHolder.parent;
         Transform _new;
         if (_surface == null) _new = transform;
         else _new = _surface.T_visualModel;
@@ -255,5 +565,6 @@ public class PlayerController : MonoBehaviour
     public void Input_Jump(InputAction.CallbackContext cxt) { Input.B_jump = cxt.performed; }
     public void Input_Interact(InputAction.CallbackContext cxt) { Input.B_interact = cxt.performed; }
     public void Input_Sprint(InputAction.CallbackContext cxt) { Input.B_sprint = cxt.performed; }
+    public void Input_Crouch(InputAction.CallbackContext cxt) { Input.B_crouch = cxt.performed; }
     public void Input_Fire(InputAction.CallbackContext cxt) { Input.B_fire = cxt.performed; }
 }

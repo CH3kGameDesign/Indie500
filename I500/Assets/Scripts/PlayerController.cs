@@ -138,6 +138,7 @@ public class PlayerController : MonoBehaviour
         A_model.SetBool("InAir", !b_grounded);
         A_model.SetBool("WallRunLeft", b_wallRunLeft);
         A_model.SetBool("WallRunRight", b_wallRunRight);
+        A_model.SetBool("Diving", b_sliding || b_dashing);
     }
 
     void FixedUpdate()
@@ -206,6 +207,8 @@ public class PlayerController : MonoBehaviour
         RB_playerPhysics.useGravity = false;
         b_canDash = false;
         b_canJump = false;
+        A_model.SetBool("Diving", true);
+        A_model.Play("Slide");
         Vector3 _force = T_playerModelHolder.forward * F_dashForce;
         RB_playerPhysics.AddForce(_force, ForceMode.Impulse);
         Invoke(nameof(ResetDash), F_dashTimer);
@@ -278,6 +281,8 @@ public class PlayerController : MonoBehaviour
         if (!b_sliding)
         {
             b_sliding = true;
+            A_model.SetBool("Diving", true);
+            A_model.Play("Slide");
             Invoke(nameof(ResetSlide), F_slideTimer);
         }
     }

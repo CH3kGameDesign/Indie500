@@ -4,7 +4,9 @@ using Unity.Cinemachine;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Splines;
 using UnityEngine.UI;
+using Dreamteck.Splines;
 
 public class PlayerController : MonoBehaviour
 {
@@ -18,6 +20,7 @@ public class PlayerController : MonoBehaviour
     public Transform T_cameraHook;
     public Transform T_pickupHook;
     public TextMeshProUGUI TM_interactText;
+    public SplineFollower SF_splineFollower;
     #endregion
     #region Input
     private inputClass Input = new inputClass();
@@ -49,6 +52,8 @@ public class PlayerController : MonoBehaviour
     private bool b_canWallRun = true;
     private bool b_wallRunLeft = false;
     private bool b_wallRunRight = false;
+    private bool b_grinding = false;
+    private bool b_canGrind = true;
     #endregion
     #region Movement
     [Header("Movement")]
@@ -216,10 +221,13 @@ public class PlayerController : MonoBehaviour
     }
     private void Jump()
     {
+        //////TEMPORRARARTY
+        GrindRail_End();
+        //////
         A_model.Play("Jump");
         b_canJump = false;
         RB_playerPhysics.linearVelocity = new Vector3(RB_playerPhysics.linearVelocity.x, 0f, RB_playerPhysics.linearVelocity.z);
-        Vector3 _force = transform.up * (b_crouching ? F_crouchJumpForce : F_jumpForce);
+        Vector3 _force = transform.up * ((b_crouching && b_grounded) ? F_crouchJumpForce : F_jumpForce);
         RB_playerPhysics.AddForce(_force, ForceMode.Impulse);
         Invoke(nameof(ResetJump), F_jumpTimer);
     }
@@ -299,7 +307,7 @@ public class PlayerController : MonoBehaviour
     private bool CanStandUp()
     {
         RaycastHit hit;
-        return !Physics.SphereCast(RB_playerPhysics.position, 0.2f, Vector3.up, out hit, F_playerHeight * 0.5f + 0.1f, LM_ground);
+        return !Physics.SphereCast(RB_playerPhysics.position + (Vector3.up / 2), 0.2f, Vector3.up, out hit, F_playerHeight * 0.5f + 0.1f, LM_ground);
     }
     IEnumerator Crouch(bool _crouching = false, float _time = 0.1f)
     {
@@ -338,7 +346,7 @@ public class PlayerController : MonoBehaviour
     private void WallRunCheck()
     {
         //Left Check
-        if (Physics.Raycast(RB_playerPhysics.transform.position, -T_playerModelHolder.transform.right, out wallHit_Left, F_wallRunCheckDistance))
+        if (Physics.Raycast(RB_playerPhysics.transform.position + Vector3.up, -T_playerModelHolder.transform.right, out wallHit_Left, F_wallRunCheckDistance))
         {
             if (wallHit_Left.collider != wallHit_Last || b_wallRunLeft)
             {
@@ -352,7 +360,7 @@ public class PlayerController : MonoBehaviour
         else
             b_wallRunLeft = false;
         //Right Check
-        if (Physics.Raycast(RB_playerPhysics.transform.position, T_playerModelHolder.transform.right, out wallHit_Right, F_wallRunCheckDistance))
+        if (Physics.Raycast(RB_playerPhysics.transform.position + Vector3.up, T_playerModelHolder.transform.right, out wallHit_Right, F_wallRunCheckDistance))
         {
             if (wallHit_Right.collider != wallHit_Last || b_wallRunRight)
             {
@@ -386,13 +394,15 @@ public class PlayerController : MonoBehaviour
     private void ResetSlide() { b_sliding = false; }
     private void GroundCheck()
     {
-        b_grounded = Physics.Raycast(RB_playerPhysics.position, Vector3.down, F_playerHeight * 0.5f + 0.1f, LM_ground);
+        RaycastHit hit;
+        b_grounded = Physics.SphereCast(RB_playerPhysics.position + Vector3.up, 0.15f, Vector3.down, out hit, F_playerHeight * 0.5f + 0.1f, LM_ground);
         if (b_grounded)
         {
             RB_playerPhysics.linearDamping = F_groundDrag;
             wallHit_Last = null;
             _midAirJumpCounter = 0;
             _midAirDashCounter = 0;
+            GrindRail_Check(hit);
             Invoke(nameof(DisableGroundPound), 0.2f);
         }
         else
@@ -401,6 +411,37 @@ public class PlayerController : MonoBehaviour
             ResetSlide();
         }
     }
+    private void GrindRail_Check(RaycastHit hit)
+    {
+        if (!b_canGrind) return;
+        if (hit.collider.tag == "GrindRail")
+        {
+            SplineComputer _spline;
+            if (hit.collider.transform.parent.TryGetComponent<SplineComputer>(out _spline))
+                GrindRail_Start(_spline, hit.point);
+        }
+    }
+    private void GrindRail_Start(SplineComputer _sc, Vector3 _position)
+    {
+        b_grinding = true;
+        b_canGrind = false;
+        
+        SF_splineFollower.spline = _sc;
+        SF_splineFollower.follow = true;
+        SF_splineFollower.SetPercent(_sc.Project(_position).percent);
+    }
+    private void GrindRail_End()
+    {
+        b_grinding = false;
+        SF_splineFollower.spline = null;
+        SF_splineFollower.follow = false;
+        Invoke(nameof(ResetGrind), F_jumpTimer);
+    }
+    public void GrindRail_ReachedEnd()
+    {
+        GrindRail_End();
+    }
+    void ResetGrind() { b_canGrind = true; }
     void DisableGroundPound() { b_groundPound = false; }
     void InteractInput()
     {
@@ -558,7 +599,7 @@ public class PlayerController : MonoBehaviour
         Transform _new;
         if (_surface == null) _new = transform;
         else _new = _surface.T_visualModel;
-        
+
         Quaternion _offset = _old.rotation * Quaternion.Inverse(_new.rotation);
 
         Vector3 _euler = _offset.eulerAngles;

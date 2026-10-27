@@ -12,10 +12,12 @@ public class AgentAudioHolder : MonoBehaviour
         public AudioSource A_death;
         [Space(10)]
         public AudioSource A_jump;
+        public AudioSource A_jumpMidAir;
         public AudioSource A_land;
         public AudioSource A_stand;
         public AudioSource A_crouch;
         public AudioSource A_sprint;
+        public AudioSource A_slide;
         [Space(10)]
         public AudioSource A_step;
         public AudioSource A_sprintStep;
@@ -24,14 +26,6 @@ public class AgentAudioHolder : MonoBehaviour
         public AudioSource A_pickupSmall;
         public AudioSource A_pickup;
         public AudioSource A_throww;
-        [Space(10)]
-        public AudioSource A_radial;
-        public AudioSource A_radialTick;
-        public AudioSource A_radialSubTick;
-        [Space(10)]
-        public AudioSource A_objectiveGain;
-        public AudioSource A_objectiveTick;
-        public AudioSource A_objectiveComplete;
     }
     [System.Serializable]
     public class audioClipClass
@@ -40,10 +34,12 @@ public class AgentAudioHolder : MonoBehaviour
         public AudioClip[] death = new AudioClip[0];
         [Space(10)]
         public AudioClip[] jump = new AudioClip[0];
+        public AudioClip[] jumpMidAir = new AudioClip[0];
         public AudioClip[] land = new AudioClip[0];
         public AudioClip[] stand = new AudioClip[0];
         public AudioClip[] crouch = new AudioClip[0];
         public AudioClip[] sprint = new AudioClip[0];
+        public AudioClip[] slide = new AudioClip[0];
         [Space(10)]
         public AudioClip[] step = new AudioClip[0];
         public AudioClip[] sprintStep = new AudioClip[0];
@@ -52,14 +48,6 @@ public class AgentAudioHolder : MonoBehaviour
         public AudioClip[] pickupSmall = new AudioClip[0];
         public AudioClip[] pickup = new AudioClip[0];
         public AudioClip[] throww = new AudioClip[0];
-        [Space(10)]
-        public AudioClip[] radial = new AudioClip[0];
-        public AudioClip[] radialTick = new AudioClip[0];
-        public AudioClip[] radialSubTick = new AudioClip[0];
-        [Space(10)]
-        public AudioClip[] objectiveGain = new AudioClip[0];
-        public AudioClip[] objectiveTick = new AudioClip[0];
-        public AudioClip[] objectiveComplete = new AudioClip[0];
     }
 
     public enum type
@@ -68,10 +56,12 @@ public class AgentAudioHolder : MonoBehaviour
         death,
 
         jump,
+        jumpMidAir,
         land,
         stand,
         crouch,
         sprint,
+        slide,
 
         step,
         sprintStep,
@@ -80,14 +70,6 @@ public class AgentAudioHolder : MonoBehaviour
         pickupSmall,
         pickup,
         throww,
-
-        radial,
-        radialTick,
-        radialSubTick,
-
-        objectiveGain,
-        objectiveTick,
-        objectiveComplete,
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -111,6 +93,8 @@ public class AgentAudioHolder : MonoBehaviour
 
             case type.jump: 
                 Play(sources.A_jump, clips.jump); break;
+            case type.jumpMidAir: 
+                Play(sources.A_jumpMidAir, clips.jumpMidAir); break;
             case type.land:
                 Play(sources.A_land, clips.land); break;
             case type.stand:
@@ -120,6 +104,9 @@ public class AgentAudioHolder : MonoBehaviour
             case type.sprint:
                 if (!sources.A_sprint.isPlaying)
                     StartCoroutine(FadeIn(sources.A_sprint, clips.sprint)); break;
+            case type.slide:
+                if (!sources.A_slide.isPlaying)
+                    StartCoroutine(FadeIn(sources.A_slide, clips.slide)); break;
 
             case type.step: 
                 Play(sources.A_step, clips.step); break;
@@ -134,21 +121,6 @@ public class AgentAudioHolder : MonoBehaviour
                 Play(sources.A_pickup, clips.pickup); break;
             case type.throww:
                 Play(sources.A_throww, clips.throww); break;
-
-            case type.radial:
-                if (!sources.A_radial.isPlaying)
-                    StartCoroutine(FadeIn(sources.A_radial, clips.radial, 0.5f, true)); break;
-            case type.radialTick:
-                Play(sources.A_radialTick, clips.radialTick); break;
-            case type.radialSubTick:
-                Play(sources.A_radialSubTick, clips.radialSubTick); break;
-
-            case type.objectiveGain:
-                Play(sources.A_objectiveGain, clips.objectiveGain); break;
-            case type.objectiveTick:
-                Play(sources.A_objectiveTick, clips.objectiveTick); break;
-            case type.objectiveComplete:
-                Play(sources.A_objectiveComplete, clips.objectiveComplete); break;
             default:
                 break;
         }
@@ -161,10 +133,9 @@ public class AgentAudioHolder : MonoBehaviour
                 if (sources.A_sprint.isPlaying)
                     StartCoroutine(FadeOut(sources.A_sprint)); 
                 break;
-
-            case type.radial:
-                if (sources.A_radial.isPlaying)
-                    StartCoroutine(FadeOut(sources.A_radial, 0.5f, true));
+            case type.slide:
+                if (sources.A_slide.isPlaying)
+                    StartCoroutine(FadeOut(sources.A_slide)); 
                 break;
             default:
                 break;

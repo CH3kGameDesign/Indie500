@@ -4,9 +4,10 @@ using Unity.Cinemachine;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Splines;
 using UnityEngine.UI;
 using Dreamteck.Splines;
+using System;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public Transform T_pickupHook;
     public TextMeshProUGUI TM_interactText;
     public SplineFollower SF_splineFollower;
+    public ParticleSystem PS_chargeParticles;
     #endregion
     #region Input
     private inputClass Input = new inputClass();
@@ -43,6 +45,9 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool b_groundPound = false;
     [HideInInspector] public bool b_crouching = false;
     [HideInInspector] public bool b_sprinting = false;
+    [HideInInspector] public int i_chargeLevel = -1;
+    [HideInInspector] public bool b_charging = false;
+    [HideInInspector] public bool b_chargeBursting = false;
     [HideInInspector] public bool b_sliding = false;
     [HideInInspector] public float f_sprintHeld = 0;
     private bool b_canJump = true;
@@ -59,8 +64,20 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     public float F_moveSpeed = 10;
     public float F_sprintMultiplier = 1.5f;
+    public float F_grindSpeedMultiplier = 3f;
     public float F_airMultiplier = 2f;
     public float F_groundDrag = 10;
+    [Space(10)]
+    public List<ChargeLevelClass> ChargeLevels = new List<ChargeLevelClass>();
+    [Serializable]
+    public class ChargeLevelClass
+    {
+        public float f_timeRequirement = 0f;
+        public float f_speedMultiplier = 2f;
+        public float f_duration = 1f;
+        [Space(10)]
+        public Color C_color = Color.whiteSmoke;
+    }
     [Space(10)]
     public float F_wallRunCheckDistance = 0.5f;
     public float F_wallRunStickiness = 100f;
@@ -135,6 +152,8 @@ public class PlayerController : MonoBehaviour
         Vector2 _input = Input.V2_Move;
         if (b_sprinting)
             _input.y = 2;
+        if (b_chargeBursting)
+            _input.y = 3;
         v2_animMove = Vector2.Lerp(v2_animMove, _input, Time.deltaTime / 0.25f);
         A_model.SetFloat("posX", v2_animMove.x);
         A_model.SetFloat("posY", v2_animMove.y);
@@ -144,6 +163,8 @@ public class PlayerController : MonoBehaviour
         A_model.SetBool("WallRunLeft", b_wallRunLeft);
         A_model.SetBool("WallRunRight", b_wallRunRight);
         A_model.SetBool("Diving", b_sliding || b_dashing);
+        A_model.SetBool("Charge", b_charging);
+        A_model.SetBool("Grind", b_grinding);
     }
 
     void FixedUpdate()
@@ -155,6 +176,7 @@ public class PlayerController : MonoBehaviour
             WallRunHandler();
             CrouchHandler();
             PhysicsMovement();
+            GrindRail_Update();
             InteractHandler();
         }
         else
@@ -165,7 +187,7 @@ public class PlayerController : MonoBehaviour
         GroundCheck();
         if (Input.B_jump)
         {
-            if (b_canJump)
+            if (b_canJump && !b_charging)
             {
                 if (b_grounded)
                     Jump();
@@ -200,10 +222,54 @@ public class PlayerController : MonoBehaviour
                         Dash_MidAir();
                 }
             }
+            if (
+                f_sprintHeld > 0.25f && f_sprintHeld < 0.35f &&
+                b_grounded && Input.V2_Move.magnitude < 0.1f &&
+                !b_charging && !b_crouching && !b_chargeBursting)
+            {
+                Charge_Start();
+            }
             f_sprintHeld += Time.deltaTime;
+            Charge_Update();
         }
         else
+        {
             f_sprintHeld = 0;
+            Charge_Activate();
+        }
+    }
+    private void Charge_Start()
+    {
+        b_charging = true;
+        Charge_SetLevel(0);
+        PS_chargeParticles.Play();
+    }
+    private void Charge_Update()
+    {
+        if (!b_charging) return;
+        if (i_chargeLevel + 1 >= ChargeLevels.Count) return;
+        if (ChargeLevels[i_chargeLevel + 1].f_timeRequirement <= f_sprintHeld)
+            Charge_SetLevel(i_chargeLevel + 1);
+    }
+    private void Charge_SetLevel(int _charge)
+    {
+        i_chargeLevel = _charge;
+        if (i_chargeLevel < 0) return;
+        var mainModule = PS_chargeParticles.main;
+        mainModule.startColor = new ParticleSystem.MinMaxGradient(ChargeLevels[i_chargeLevel].C_color);
+    }
+    private void Charge_Activate()
+    {
+        if (!b_charging) return;
+        b_charging = false;
+        b_chargeBursting = true;
+        PS_chargeParticles.Stop();
+        Invoke(nameof(Charge_End), ChargeLevels[i_chargeLevel].f_duration);
+    }
+    private void Charge_End()
+    {
+        b_chargeBursting = false;
+        Charge_SetLevel(-1);
     }
     private void Dash_MidAir()
     {
@@ -221,9 +287,8 @@ public class PlayerController : MonoBehaviour
     }
     private void Jump()
     {
-        //////TEMPORRARARTY
-        GrindRail_End();
-        //////
+        if (b_grinding)
+            GrindRail_End();
         A_model.Play("Jump");
         b_canJump = false;
         RB_playerPhysics.linearVelocity = new Vector3(RB_playerPhysics.linearVelocity.x, 0f, RB_playerPhysics.linearVelocity.z);
@@ -256,7 +321,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.B_crouch)
         {
-            if (!b_crouching)
+            if (!b_crouching && !b_charging)
             {
                 //Start Crouching
                 if (CrouchCoroutine != null)
@@ -425,10 +490,58 @@ public class PlayerController : MonoBehaviour
     {
         b_grinding = true;
         b_canGrind = false;
-        
+
         SF_splineFollower.spline = _sc;
         SF_splineFollower.follow = true;
-        SF_splineFollower.SetPercent(_sc.Project(_position).percent);
+
+        SplineSample _progress = _sc.Project(_position);
+        //Set Position
+        SF_splineFollower.SetPercent(_progress.percent);
+        //Set Direction
+        Vector3 _dir = v3_rotMove;
+        float movementDot = Vector3.Dot(_dir, _progress.forward);
+        curGrindSpeed = Mathf.Max(v3_rotMove.magnitude * F_grindSpeedMultiplier, 1f);
+        if (movementDot >= 0)
+        {
+            SF_splineFollower.direction = Spline.Direction.Forward;
+        }
+        else
+        {
+            curGrindSpeed *= -1f;
+            SF_splineFollower.direction = Spline.Direction.Backward;
+        }
+        SF_splineFollower.followSpeed = curGrindSpeed;
+    }
+    float curGrindSpeed = 3;
+    private void GrindRail_Update()
+    {
+        if (!b_grinding) return;
+        if (v3_rotMove.AlmostZero()) return;
+
+        SplineComputer _sc = SF_splineFollower.spline;
+        SplineSample _progress = _sc.Project(RB_playerPhysics.position);
+        //Set Direction
+        Vector3 _dir = v3_rotMove;
+        float movementDot = Vector3.Dot(_dir, _progress.forward);
+        if (SF_splineFollower.direction == Spline.Direction.Forward)
+        {
+            curGrindSpeed = Mathf.Lerp(curGrindSpeed, movementDot * v3_rotMove.magnitude * F_grindSpeedMultiplier, Time.fixedDeltaTime);
+            if (movementDot < 0f && curGrindSpeed < 0.1f)
+            {
+                curGrindSpeed = -1f;
+                SF_splineFollower.direction = Spline.Direction.Backward;
+            }
+        }
+        if (SF_splineFollower.direction == Spline.Direction.Backward)
+        {
+            curGrindSpeed = Mathf.Lerp(curGrindSpeed, movementDot * v3_rotMove.magnitude * F_grindSpeedMultiplier, Time.fixedDeltaTime);
+            if (movementDot > 0f && curGrindSpeed > -0.1f)
+            {
+                curGrindSpeed = 1f;
+                SF_splineFollower.direction = Spline.Direction.Forward;
+            }
+        }
+        SF_splineFollower.followSpeed = curGrindSpeed;
     }
     private void GrindRail_End()
     {
@@ -439,6 +552,7 @@ public class PlayerController : MonoBehaviour
     }
     public void GrindRail_ReachedEnd()
     {
+        Jump();
         GrindRail_End();
     }
     void ResetGrind() { b_canGrind = true; }
@@ -526,12 +640,19 @@ public class PlayerController : MonoBehaviour
     }
     void PhysicsMovement()
     {
-        v3_rotMove = Quaternion.Euler(q_rotPlayerModel) * new Vector3(Input.V2_Move.x, 0, Input.V2_Move.y) * 10 * F_moveSpeed * Time.fixedDeltaTime;
-        if (!b_grounded) v3_rotMove *= F_airMultiplier;
-        if (b_sprinting || b_wallRunning) v3_rotMove *= F_sprintMultiplier;
-        if (b_sliding) v3_rotMove = v3_slideDirection;
-        else v3_slideDirection = v3_rotMove;
-        RB_playerPhysics.AddForce(v3_rotMove, ForceMode.Impulse);
+        if (b_chargeBursting)
+            v3_rotMove = Quaternion.Euler(q_rotPlayerModel) * new Vector3(Input.V2_Move.x * 0.25f, 0, 1) * F_moveSpeed * ChargeLevels[i_chargeLevel].f_speedMultiplier;
+        else
+            v3_rotMove = Quaternion.Euler(q_rotPlayerModel) * new Vector3(Input.V2_Move.x, 0, Input.V2_Move.y) * 10 * F_moveSpeed * Time.fixedDeltaTime;
+        v3_rotMove *= 10 * F_moveSpeed * Time.fixedDeltaTime;
+        if (!b_charging)
+        {
+            if (!b_grounded) v3_rotMove *= F_airMultiplier;
+            if (b_sprinting || b_wallRunning || b_chargeBursting) v3_rotMove *= F_sprintMultiplier;
+            if (b_sliding) v3_rotMove = v3_slideDirection;
+            else v3_slideDirection = v3_rotMove;
+            RB_playerPhysics.AddForce(v3_rotMove, ForceMode.Impulse);
+        }
         SpeedControl();
     }
     private void SpeedControl()
@@ -539,7 +660,8 @@ public class PlayerController : MonoBehaviour
         Vector3 flatVel = new Vector3(RB_playerPhysics.linearVelocity.x, 0f, RB_playerPhysics.linearVelocity.z);
 
         float _moveSpeed = F_moveSpeed;
-        if (b_sprinting) _moveSpeed *= F_sprintMultiplier;
+        if (b_sprinting || b_wallRunning || b_chargeBursting) _moveSpeed *= F_sprintMultiplier;
+        if (b_chargeBursting) _moveSpeed *= ChargeLevels[i_chargeLevel].f_speedMultiplier;
         if (!b_grounded) _moveSpeed *= F_airMultiplier;
         // limit velocity if needed
         if(flatVel.magnitude > _moveSpeed && !b_dashing && !b_sliding)
@@ -561,7 +683,10 @@ public class PlayerController : MonoBehaviour
     }
     void CameraMovement()
     {
-        q_rotLook += new Vector3(-Input.V2_Look.y, Input.V2_Look.x, 0) * F_lookSpeed * Time.deltaTime;
+        if (b_chargeBursting)
+            q_rotLook += new Vector3(-Input.V2_Look.y, 0, 0) * F_lookSpeed * 0.2f * Time.deltaTime;
+        else
+            q_rotLook += new Vector3(-Input.V2_Look.y, Input.V2_Look.x, 0) * F_lookSpeed * Time.deltaTime;
         q_rotLook.x = Mathf.Clamp(q_rotLook.x, V2_xLookBounds.x, V2_xLookBounds.y);
         q_rotPlayerModel.y = q_rotLook.y;
         q_rotCameraHook.x = q_rotLook.x;

@@ -158,6 +158,7 @@ public class PlayerController : MonoBehaviour
         A_model.SetFloat("posX", v2_animMove.x);
         A_model.SetFloat("posY", v2_animMove.y);
         A_model.SetBool("Crouching", b_crouching);
+        A_model.SetBool("GroundPound", b_groundPound);
         A_model.SetBool("Moving", v2_animMove.magnitude > 0.1f);
         A_model.SetBool("InAir", !b_grounded);
         A_model.SetBool("WallRunLeft", b_wallRunLeft);
@@ -289,7 +290,10 @@ public class PlayerController : MonoBehaviour
     {
         if (b_grinding)
             GrindRail_End();
-        A_model.Play("Jump");
+        if (b_crouching)
+            A_model.Play("HighJump");
+        else
+            A_model.Play("Jump");
         b_canJump = false;
         RB_playerPhysics.linearVelocity = new Vector3(RB_playerPhysics.linearVelocity.x, 0f, RB_playerPhysics.linearVelocity.z);
         Vector3 _force = transform.up * ((b_crouching && b_grounded) ? F_crouchJumpForce : F_jumpForce);

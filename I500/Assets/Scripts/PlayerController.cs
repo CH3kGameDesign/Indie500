@@ -290,7 +290,7 @@ public class PlayerController : MonoBehaviour
     {
         if (b_grinding)
             GrindRail_End();
-        if (b_crouching)
+        if (b_crouching && b_grounded)
             A_model.Play("HighJump");
         else
             A_model.Play("Jump");

@@ -87,6 +87,185 @@ public static class CKUtil
             _pos.y -= _e.y;
         return _pos;
     }
+    
+    public static void SetupInputSpriteSheet(this TMP_Text _TM)
+    {
+        switch (InputStrings.Instance.s_inputType)
+        {
+            case "Keyboard":
+                _TM.spriteAsset = InputStrings.Instance.inputRef.SA_keyboard;
+                break;
+            case "PlayStation Controller":
+                _TM.spriteAsset = InputStrings.Instance.inputRef.SA_ps;
+                break;
+            case "DualSense Wireless Controller":
+                _TM.spriteAsset = InputStrings.Instance.inputRef.SA_ps;
+                break;
+            case "DualShock Wireless Controller":
+                _TM.spriteAsset = InputStrings.Instance.inputRef.SA_ps;
+                break;
+            case "Wireless Controller":
+                _TM.spriteAsset = InputStrings.Instance.inputRef.SA_ps;
+                break;
+            case "Switch Pro Controller":
+                _TM.spriteAsset = InputStrings.Instance.inputRef.SA_switch;
+                break;
+            case "NSW Pro Controller":
+                _TM.spriteAsset = InputStrings.Instance.inputRef.SA_switch;
+                break;
+            case "NSW Wired Controller":
+                _TM.spriteAsset = InputStrings.Instance.inputRef.SA_switch;
+                break;
+            case "NSW Wireless Controller":
+                _TM.spriteAsset = InputStrings.Instance.inputRef.SA_switch;
+                break;
+            case "Steam Controller":
+                _TM.spriteAsset = InputStrings.Instance.inputRef.SA_steamDeck;
+                break;
+            default:
+                _TM.spriteAsset = InputStrings.Instance.inputRef.SA_xbox;
+                break;
+        }
+    }
+    public static string ToString_Input(this string _interactable, InputStrings.inputActions _input, TMP_Text _TM, InputStrings.enumType _type = InputStrings.enumType.interact)
+    {
+        string _sprite = InputStrings.Instance.inputs[(int)_input];
+        _TM.SetupInputSpriteSheet();
+        string _temp = InputStrings.interactText[(int)_type];
+        _temp = _temp.Replace("[0]", _sprite);
+        _temp = _temp.Replace("[1]", _interactable);
+        return _temp;
+    }
+    public static string ToString_InputSetup(this string _interactable, InputStrings.inputActions _input, InputStrings.enumType _type = InputStrings.enumType.interact)
+    {
+        InputStrings _IS = InputStrings.Instance;
+        string _sprite = _IS.playerInput.actions.FindAction(_input.ToString()).GetBindingDisplayString(0, _IS.b_isGamepad ? "Gamepad": "Keyboard&Mouse");
+        if (_sprite.Length > 6)
+            if (_sprite.Substring(0, 6) == "Press ")
+                _sprite = _sprite.Remove(0, 6);
+        switch (_input)
+        {
+            case InputStrings.inputActions.Move:
+                switch (_IS.s_inputType)
+                {
+                    case "Keyboard":
+                        _sprite = "mousekeyboard_key_WASD";
+                        break;
+                    case "PlayStation Controller":
+                        _sprite = "ps5_stick_left";
+                        break;
+                    case "DualSense Wireless Controller":
+                        _sprite = "ps5_stick_left";
+                        break;
+                    case "DualShock Wireless Controller":
+                        _sprite = "ps5_stick_left";
+                        break;
+                    case "Wireless Controller":
+                        _sprite = "ps5_stick_left";
+                        break;
+                    case "Switch Pro Controller":
+                        _sprite = "switch_stick_left";
+                        break;
+                    case "NSW Pro Controller":
+                        _sprite = "switch_stick_left";
+                        break;
+                    case "NSW Wired Controller":
+                        _sprite = "switch_stick_left";
+                        break;
+                    case "NSW Wireless Controller":
+                        _sprite = "switch_stick_left";
+                        break;
+                    case "Steam Controller":
+                        _sprite = "steamdeck_stick_left";
+                        break;
+                    default:
+                        _sprite = "xbox_series_stick_left";
+                        break;
+                }
+                break;
+            case InputStrings.inputActions.Look:
+                switch (_IS.s_inputType)
+                {
+                    case "Keyboard":
+                        _sprite = "mousekeyboard_mouse_simple";
+                        break;
+                    case "PlayStation Controller":
+                        _sprite = "ps5_stick_right";
+                        break;
+                    case "DualSense Wireless Controller":
+                        _sprite = "ps5_stick_right";
+                        break;
+                    case "DualShock Wireless Controller":
+                        _sprite = "ps5_stick_right";
+                        break;
+                    case "Wireless Controller":
+                        _sprite = "ps5_stick_right";
+                        break;
+                    case "Switch Pro Controller":
+                        _sprite = "switch_stick_right";
+                        break;
+                    case "NSW Pro Controller":
+                        _sprite = "switch_stick_right";
+                        break;
+                    case "NSW Wired Controller":
+                        _sprite = "switch_stick_right";
+                        break;
+                    case "NSW Wireless Controller":
+                        _sprite = "switch_stick_right";
+                        break;
+                    case "Steam Controller":
+                        _sprite = "steamdeck_stick_right";
+                        break;
+                    default:
+                        _sprite = "xbox_series_stick_right";
+                        break;
+                }
+                break;
+            default:
+                switch (_IS.s_inputType)
+                {
+                    case "Keyboard":
+                        _sprite = "mousekeyboard_key_" + _sprite;
+                        break;
+                    case "PlayStation Controller":
+                        _sprite = "ps5_button_" + _sprite;
+                        break;
+                    case "DualSense Wireless Controller":
+                        _sprite = "ps5_button_" + _sprite;
+                        break;
+                    case "DualShock Wireless Controller":
+                        _sprite = "ps5_button_" + _sprite;
+                        break;
+                    case "Wireless Controller":
+                        _sprite = "ps5_button_" + _sprite;
+                        break;
+                    case "Switch Pro Controller":
+                        _sprite = "switch_button_" + _sprite;
+                        break;
+                    case "NSW Pro Controller":
+                        _sprite = "switch_button_" + _sprite;
+                        break;
+                    case "NSW Wired Controller":
+                        _sprite = "switch_button_" + _sprite;
+                        break;
+                    case "NSW Wireless Controller":
+                        _sprite = "switch_button_" + _sprite;
+                        break;
+                    case "Steam Controller":
+                        _sprite = "steamdeck_button_" + _sprite;
+                        break;
+                    default:
+                        _sprite = "xbox_series_button_" + _sprite;
+                        break;
+                }
+                break;
+        }
+        
+        string _temp = InputStrings.interactText[(int)_type];
+        _temp = _temp.Replace("[0]", _sprite.ToSprite());
+        _temp = _temp.Replace("[1]", _interactable);
+        return _temp;
+    }
     public static string ToSprite(this string _string)
     {
         _string = "<sprite name=\"" + _string + "\">";

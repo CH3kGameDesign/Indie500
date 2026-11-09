@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public Transform T_cameraHook;
     public Transform T_pickupHook;
     public TextMeshProUGUI TM_interactText;
+    public TextMeshProUGUI TM_graffitiLineText;
     public SplineFollower SF_splineFollower;
     public ParticleSystem PS_chargeParticles;
     #endregion
@@ -121,12 +122,18 @@ public class PlayerController : MonoBehaviour
     private VehicleSeat _curVehicle = null;
     private Pickup _curPickup = null;
     private Interact _curInteract = null;
-    private Coroutine _interactCoyote = null;
+    public List<Interact> _possibleInteract = new List<Interact>();
+
+    #region Graffiti
+    private GraffitiLine _curGraffiti = null;
+    private bool b_midGraffiti = false;
+    private int[] i_graffitiButtons = new int[0];
+    private int i_graffitiCount = 0;
+    #endregion
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         SetCursorLock(true);
-        InteractCheck();
     }
 
     void SetCursorLock(bool _locked)
@@ -140,6 +147,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (b_midGraffiti)
+            return;
         CameraMovement();
         CameraJuiceHandler();
         AnimationUpdate();
@@ -170,6 +179,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (b_midGraffiti)
+            return;
         if (!_curVehicle)
         {
             JumpHandler();
@@ -602,21 +613,12 @@ public class PlayerController : MonoBehaviour
     }
     void InteractHandler()
     {
-        RaycastHit hit;
-        if (Physics.Raycast(Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)), out hit, 5))
-        {
-            Interact temp;
-            if (hit.collider.TryGetComponent<Interact>(out temp))
-            {
-                if (_interactCoyote != null)
-                { StopCoroutine(_interactCoyote); _interactCoyote = null; }
-                InteractCheck(temp);
-            }
-            else InteractCoyoteTimeCheck();
-        }
-        else InteractCoyoteTimeCheck();
+        if (_possibleInteract.Count > 0)
+            Interact_Check(_possibleInteract[0]);
+        else
+            Interact_Check(null);
     }
-    void InteractCheck(Interact _interact = null)
+    void Interact_Check(Interact _interact = null)
     {
         bool _valid = _interact != null;
         if (_valid) _valid = _interact.B_canInteract;
@@ -631,16 +633,73 @@ public class PlayerController : MonoBehaviour
             TM_interactText.text = _curInteract.GetInteractString();
         }
     }
-    void InteractCoyoteTimeCheck()
+    void Interact_Enter(Interact _interact)
     {
-        if (_interactCoyote == null)
-            _interactCoyote = StartCoroutine(InteractCoyoteTime());
+        Debug.Log("Enter");
+        if (_possibleInteract.Contains(_interact))
+            return;
+        _possibleInteract.Add(_interact);
     }
-    IEnumerator InteractCoyoteTime()
+    void Interact_Exit(Interact _interact)
     {
-        yield return new WaitForSecondsRealtime(0.1f);
-        InteractCheck(null);
-         _interactCoyote = null; 
+        Debug.Log("Exit");
+        if (_possibleInteract.Contains(_interact))
+            _possibleInteract.Remove(_interact);
+    }
+    public void Graffiti_Start(GraffitiLine _graffiti, int[] _buttons)
+    {
+        _curGraffiti = _graffiti;
+        i_graffitiButtons = _buttons;
+        i_graffitiCount = 0;
+        b_midGraffiti = true;
+        Graffiti_UpdateText();
+    }
+    void Graffiti_UpdateText()
+    {
+        TM_graffitiLineText.gameObject.SetActive(true);
+        string _text = "";
+        for (int i = i_graffitiCount; i < i_graffitiButtons.Length; i++)
+        {
+            switch (i_graffitiButtons[i])
+            {
+                case 0: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_1, TM_graffitiLineText, InputStrings.enumType.input); break;
+                case 1: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_2, TM_graffitiLineText, InputStrings.enumType.input); break;
+                case 2: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_3, TM_graffitiLineText, InputStrings.enumType.input); break;
+                case 3: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_4, TM_graffitiLineText, InputStrings.enumType.input); break;
+                case 4: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_5, TM_graffitiLineText, InputStrings.enumType.input); break;
+                case 5: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_6, TM_graffitiLineText, InputStrings.enumType.input); break;
+                default:
+                    break;
+            }
+        }
+        TM_graffitiLineText.text = _text;
+    }
+    void Graffiti_Input(int _num)
+    {
+        if (i_graffitiCount >= i_graffitiButtons.Length)
+            return;
+        if (i_graffitiButtons[i_graffitiCount] == _num)
+        {
+            //Success
+            i_graffitiCount++;
+            Graffiti_UpdateText();
+            if (i_graffitiCount >= i_graffitiButtons.Length)
+            {
+                //Finish
+                Graffiti_Finish();
+            }
+        }
+        else
+        {
+            //Fail
+        }
+    }
+    void Graffiti_Finish()
+    {
+        b_midGraffiti = false;
+        TM_graffitiLineText.gameObject.SetActive(false);
+        i_graffitiButtons = new int[0];
+        i_graffitiCount = 0;
     }
     void PhysicsMovement()
     {
@@ -735,6 +794,19 @@ public class PlayerController : MonoBehaviour
         q_rotLook.y += _euler.y;
     }
 
+    public void OnTriggerEnter(Collider other)
+    {
+        Interact _interact;
+        if (other.TryGetComponent<Interact>(out _interact))
+            Interact_Enter(_interact);
+    }
+    public void OnTriggerExit(Collider other)
+    {
+        Interact _interact;
+        if (other.TryGetComponent<Interact>(out _interact))
+            Interact_Exit(_interact);
+    }
+
     public void Input_Move(InputAction.CallbackContext cxt) { Input.V2_Move = cxt.ReadValue<Vector2>(); }
     public void Input_Look(InputAction.CallbackContext cxt) { Input.V2_Look = cxt.ReadValue<Vector2>(); }
     public void Input_Jump(InputAction.CallbackContext cxt) { Input.B_jump = cxt.performed; }
@@ -742,4 +814,10 @@ public class PlayerController : MonoBehaviour
     public void Input_Sprint(InputAction.CallbackContext cxt) { Input.B_sprint = cxt.performed; }
     public void Input_Crouch(InputAction.CallbackContext cxt) { Input.B_crouch = cxt.performed; }
     public void Input_Fire(InputAction.CallbackContext cxt) { Input.B_fire = cxt.performed; }
+    public void Input_GraffitiLine_1(InputAction.CallbackContext cxt) { if (cxt.performed) Graffiti_Input(0); }
+    public void Input_GraffitiLine_2(InputAction.CallbackContext cxt) { if (cxt.performed) Graffiti_Input(1); }
+    public void Input_GraffitiLine_3(InputAction.CallbackContext cxt) { if (cxt.performed) Graffiti_Input(2); }
+    public void Input_GraffitiLine_4(InputAction.CallbackContext cxt) { if (cxt.performed) Graffiti_Input(3); }
+    public void Input_GraffitiLine_5(InputAction.CallbackContext cxt) { if (cxt.performed) Graffiti_Input(4); }
+    public void Input_GraffitiLine_6(InputAction.CallbackContext cxt) { if (cxt.performed) Graffiti_Input(5); }
 }

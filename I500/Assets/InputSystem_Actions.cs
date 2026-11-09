@@ -172,6 +172,60 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""GraffitiLine_1"",
+                    ""type"": ""Button"",
+                    ""id"": ""ebdfaccd-d4ff-45a7-a895-435e774f7ed1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""GraffitiLine_2"",
+                    ""type"": ""Button"",
+                    ""id"": ""7aec7591-fd82-46f5-b288-e78827035728"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""GraffitiLine_3"",
+                    ""type"": ""Button"",
+                    ""id"": ""986ecc69-e85d-43c9-b212-c89d4617cd50"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""GraffitiLine_4"",
+                    ""type"": ""Button"",
+                    ""id"": ""a501b861-57b7-47b9-bfff-79f42de718d5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""GraffitiLine_5"",
+                    ""type"": ""Button"",
+                    ""id"": ""a003a45a-acce-42dc-abac-1b6404dc15b3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""GraffitiLine_6"",
+                    ""type"": ""Button"",
+                    ""id"": ""0e07bdf7-e095-4d52-a01d-28ca3aace3a7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -546,6 +600,138 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e54bb556-ba47-4412-8892-82dfb46f7c23"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""GraffitiLine_1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c85ab09e-f37e-4749-adca-f2bd328772e6"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""GraffitiLine_1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9d09c43f-17bc-4d8e-8e4b-5f5fd22b5112"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""GraffitiLine_2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6f2b6a48-2add-4cbb-b02e-b7cc9e012e5c"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""GraffitiLine_2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""98369c07-e250-458a-b42b-9a44321dabb7"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""GraffitiLine_3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ccef195a-1822-473b-86cd-6c0cd1748f0b"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""GraffitiLine_3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3588bee8-4507-4a2f-a2eb-6cac3b5525d4"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""GraffitiLine_4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ed888fe3-9d74-4614-b8e5-5807e79cf64a"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""GraffitiLine_4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9d02421c-32f2-4299-af83-273037926819"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""GraffitiLine_5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""faa9354c-9137-4862-96f9-40b44d0a5170"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""GraffitiLine_5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""096714d4-6054-4c57-8499-3a2c81b10a93"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""GraffitiLine_6"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d97b96e6-7fda-458e-b6ae-aeca4b4736b6"",
+                    ""path"": ""<XInputController>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""GraffitiLine_6"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1142,6 +1328,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Previous = m_Player.FindAction("Previous", throwIfNotFound: true);
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
+        m_Player_GraffitiLine_1 = m_Player.FindAction("GraffitiLine_1", throwIfNotFound: true);
+        m_Player_GraffitiLine_2 = m_Player.FindAction("GraffitiLine_2", throwIfNotFound: true);
+        m_Player_GraffitiLine_3 = m_Player.FindAction("GraffitiLine_3", throwIfNotFound: true);
+        m_Player_GraffitiLine_4 = m_Player.FindAction("GraffitiLine_4", throwIfNotFound: true);
+        m_Player_GraffitiLine_5 = m_Player.FindAction("GraffitiLine_5", throwIfNotFound: true);
+        m_Player_GraffitiLine_6 = m_Player.FindAction("GraffitiLine_6", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1244,6 +1436,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Previous;
     private readonly InputAction m_Player_Next;
     private readonly InputAction m_Player_Sprint;
+    private readonly InputAction m_Player_GraffitiLine_1;
+    private readonly InputAction m_Player_GraffitiLine_2;
+    private readonly InputAction m_Player_GraffitiLine_3;
+    private readonly InputAction m_Player_GraffitiLine_4;
+    private readonly InputAction m_Player_GraffitiLine_5;
+    private readonly InputAction m_Player_GraffitiLine_6;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1291,6 +1489,30 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Sprint".
         /// </summary>
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/GraffitiLine_1".
+        /// </summary>
+        public InputAction @GraffitiLine_1 => m_Wrapper.m_Player_GraffitiLine_1;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/GraffitiLine_2".
+        /// </summary>
+        public InputAction @GraffitiLine_2 => m_Wrapper.m_Player_GraffitiLine_2;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/GraffitiLine_3".
+        /// </summary>
+        public InputAction @GraffitiLine_3 => m_Wrapper.m_Player_GraffitiLine_3;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/GraffitiLine_4".
+        /// </summary>
+        public InputAction @GraffitiLine_4 => m_Wrapper.m_Player_GraffitiLine_4;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/GraffitiLine_5".
+        /// </summary>
+        public InputAction @GraffitiLine_5 => m_Wrapper.m_Player_GraffitiLine_5;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/GraffitiLine_6".
+        /// </summary>
+        public InputAction @GraffitiLine_6 => m_Wrapper.m_Player_GraffitiLine_6;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1344,6 +1566,24 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
+            @GraffitiLine_1.started += instance.OnGraffitiLine_1;
+            @GraffitiLine_1.performed += instance.OnGraffitiLine_1;
+            @GraffitiLine_1.canceled += instance.OnGraffitiLine_1;
+            @GraffitiLine_2.started += instance.OnGraffitiLine_2;
+            @GraffitiLine_2.performed += instance.OnGraffitiLine_2;
+            @GraffitiLine_2.canceled += instance.OnGraffitiLine_2;
+            @GraffitiLine_3.started += instance.OnGraffitiLine_3;
+            @GraffitiLine_3.performed += instance.OnGraffitiLine_3;
+            @GraffitiLine_3.canceled += instance.OnGraffitiLine_3;
+            @GraffitiLine_4.started += instance.OnGraffitiLine_4;
+            @GraffitiLine_4.performed += instance.OnGraffitiLine_4;
+            @GraffitiLine_4.canceled += instance.OnGraffitiLine_4;
+            @GraffitiLine_5.started += instance.OnGraffitiLine_5;
+            @GraffitiLine_5.performed += instance.OnGraffitiLine_5;
+            @GraffitiLine_5.canceled += instance.OnGraffitiLine_5;
+            @GraffitiLine_6.started += instance.OnGraffitiLine_6;
+            @GraffitiLine_6.performed += instance.OnGraffitiLine_6;
+            @GraffitiLine_6.canceled += instance.OnGraffitiLine_6;
         }
 
         /// <summary>
@@ -1382,6 +1622,24 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
+            @GraffitiLine_1.started -= instance.OnGraffitiLine_1;
+            @GraffitiLine_1.performed -= instance.OnGraffitiLine_1;
+            @GraffitiLine_1.canceled -= instance.OnGraffitiLine_1;
+            @GraffitiLine_2.started -= instance.OnGraffitiLine_2;
+            @GraffitiLine_2.performed -= instance.OnGraffitiLine_2;
+            @GraffitiLine_2.canceled -= instance.OnGraffitiLine_2;
+            @GraffitiLine_3.started -= instance.OnGraffitiLine_3;
+            @GraffitiLine_3.performed -= instance.OnGraffitiLine_3;
+            @GraffitiLine_3.canceled -= instance.OnGraffitiLine_3;
+            @GraffitiLine_4.started -= instance.OnGraffitiLine_4;
+            @GraffitiLine_4.performed -= instance.OnGraffitiLine_4;
+            @GraffitiLine_4.canceled -= instance.OnGraffitiLine_4;
+            @GraffitiLine_5.started -= instance.OnGraffitiLine_5;
+            @GraffitiLine_5.performed -= instance.OnGraffitiLine_5;
+            @GraffitiLine_5.canceled -= instance.OnGraffitiLine_5;
+            @GraffitiLine_6.started -= instance.OnGraffitiLine_6;
+            @GraffitiLine_6.performed -= instance.OnGraffitiLine_6;
+            @GraffitiLine_6.canceled -= instance.OnGraffitiLine_6;
         }
 
         /// <summary>
@@ -1745,6 +2003,48 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSprint(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "GraffitiLine_1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGraffitiLine_1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "GraffitiLine_2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGraffitiLine_2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "GraffitiLine_3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGraffitiLine_3(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "GraffitiLine_4" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGraffitiLine_4(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "GraffitiLine_5" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGraffitiLine_5(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "GraffitiLine_6" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGraffitiLine_6(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

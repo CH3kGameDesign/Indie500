@@ -8,17 +8,19 @@ public class TriggerDisplay : MonoBehaviour {
 	// Magic Editor Stuff
 	void OnDrawGizmos()
 	{
-		Vector3 drawBoxVector = new Vector3(
-			this.transform.lossyScale.x * this.GetComponent<BoxCollider>().size.x,
-			this.transform.lossyScale.y * this.GetComponent<BoxCollider>().size.y,
-			this.transform.lossyScale.z * this.GetComponent<BoxCollider>().size.z
-		);
-
-		Vector3 drawBoxPosition = this.transform.position + this.GetComponent<BoxCollider>().center;
-
-		Gizmos.matrix = Matrix4x4.TRS(drawBoxPosition, this.transform.rotation, drawBoxVector);
+		Gizmos.matrix = Matrix4x4.TRS(this.transform.position, this.transform.rotation, this.transform.lossyScale);
 		Gizmos.color = C_color;
-		Gizmos.DrawCube(Vector3.zero, Vector3.one);
-		Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
+		BoxCollider _box;
+		if (this.TryGetComponent<BoxCollider>(out _box))
+		{
+			Gizmos.DrawCube(_box.center, _box.size);
+			Gizmos.DrawWireCube(_box.center, _box.size);
+		}
+		SphereCollider _sphere;
+		if (this.TryGetComponent<SphereCollider>(out _sphere))
+		{
+			Gizmos.DrawSphere(_sphere.center, _sphere.radius);
+			Gizmos.DrawWireSphere(_sphere.center, _sphere.radius);
+		}
 	}
 }

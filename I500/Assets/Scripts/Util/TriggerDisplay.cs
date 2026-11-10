@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class TriggerDisplay : MonoBehaviour {
 
-	public Color C_color = new Color(1,0,0,0.4f);
+	public Color C_color = new Color(1, 0, 0, 0.4f);
+	public bool b_pointDirection = false;
 	// Magic Editor Stuff
 	void OnDrawGizmos()
 	{
@@ -21,6 +22,13 @@ public class TriggerDisplay : MonoBehaviour {
 		{
 			Gizmos.DrawSphere(_sphere.center, _sphere.radius);
 			Gizmos.DrawWireSphere(_sphere.center, _sphere.radius);
+		}
+		if (b_pointDirection)
+		{
+			Gizmos.DrawCube(new Vector3(0,0,0.25f), new Vector3(0.1f,0.1f,0.1f));
+			Gizmos.DrawWireCube(new Vector3(0,0,0.25f), new Vector3(0.1f,0.1f,0.1f));
+			Gizmos.DrawCube(new Vector3(0,0,0.15f), new Vector3(0.3f,0.1f,0.1f));
+			Gizmos.DrawWireCube(new Vector3(0,0,0.15f), new Vector3(0.3f,0.1f,0.1f));
 		}
 	}
 }

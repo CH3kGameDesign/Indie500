@@ -652,6 +652,9 @@ public class PlayerController : MonoBehaviour
         i_graffitiButtons = _buttons;
         i_graffitiCount = 0;
         b_midGraffiti = true;
+        RB_playerPhysics.linearVelocity = Vector3.zero;
+        RB_playerPhysics.isKinematic = true;
+        Graffiti_UpdateWorld();
         Graffiti_UpdateText();
     }
     void Graffiti_UpdateText()
@@ -674,6 +677,19 @@ public class PlayerController : MonoBehaviour
         }
         TM_graffitiLineText.text = _text;
     }
+    void Graffiti_UpdateWorld()
+    {
+        RB_playerPhysics.position = _curGraffiti.points[i_graffitiCount].transform.position;
+        T_playerModelHolder.rotation = _curGraffiti.points[i_graffitiCount].transform.rotation;
+        T_playerModel.localEulerAngles = new Vector3(0, 90, 0);
+        Vector3 _rot = _curGraffiti.points[i_graffitiCount].transform.eulerAngles;
+        _rot += new Vector3(30f + UnityEngine.Random.Range(-30f, 30f), 0f, 0f);
+        if (i_graffitiCount % 2 == 0)   _rot += new Vector3(0f, UnityEngine.Random.Range(-40f, -20f), 0f);
+        else                            _rot += new Vector3(0f, UnityEngine.Random.Range(20f, 40f), 0f);
+        T_cameraHook.eulerAngles = _rot;
+        string _anim = "Graffiti_" + UnityEngine.Random.Range(1, 3).ToString();
+        A_model.Play(_anim);
+    }
     void Graffiti_Input(int _num)
     {
         if (i_graffitiCount >= i_graffitiButtons.Length)
@@ -681,9 +697,14 @@ public class PlayerController : MonoBehaviour
         if (i_graffitiButtons[i_graffitiCount] == _num)
         {
             //Success
+            _curGraffiti.OnSuccess(i_graffitiCount);
             i_graffitiCount++;
-            Graffiti_UpdateText();
-            if (i_graffitiCount >= i_graffitiButtons.Length)
+            if (i_graffitiCount < i_graffitiButtons.Length)
+            {
+                Graffiti_UpdateWorld();
+                Graffiti_UpdateText();
+            }
+            else
             {
                 //Finish
                 Graffiti_Finish();
@@ -700,6 +721,8 @@ public class PlayerController : MonoBehaviour
         TM_graffitiLineText.gameObject.SetActive(false);
         i_graffitiButtons = new int[0];
         i_graffitiCount = 0;
+        RB_playerPhysics.isKinematic = false;
+        A_model.Play("Grounded");
     }
     void PhysicsMovement()
     {

@@ -1140,7 +1140,7 @@ MonoBehaviour:
   f_sprintHeld: 0
   F_moveSpeed: 3
   F_sprintMultiplier: 2.2
-  F_grindSpeedMultiplier: 3
+  F_grindSpeedMultiplier: 6
   F_airMultiplier: 1
   F_groundDrag: 5
   ChargeLevels:
@@ -1175,7 +1175,7 @@ MonoBehaviour:
   F_playerHeight: 2
   LM_ground:
     serializedVersion: 2
-    m_Bits: 257
+    m_Bits: 769
   F_throwForce: 10
   F_lookSpeed: 20
   V2_xLookBounds: {x: -80, y: 80}

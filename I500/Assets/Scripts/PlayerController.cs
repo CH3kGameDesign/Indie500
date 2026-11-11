@@ -129,6 +129,7 @@ public class PlayerController : MonoBehaviour
     private bool b_midGraffiti = false;
     private int[] i_graffitiButtons = new int[0];
     private int i_graffitiCount = 0;
+    private bool b_graffitiAscending = true;
     #endregion
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -538,9 +539,11 @@ public class PlayerController : MonoBehaviour
         //Set Direction
         Vector3 _dir = v3_rotMove;
         float movementDot = Vector3.Dot(_dir, _progress.forward);
+        if (movementDot > 0) movementDot = 1;
+        else movementDot = -1;
         if (SF_splineFollower.direction == Spline.Direction.Forward)
         {
-            curGrindSpeed = Mathf.Lerp(curGrindSpeed, movementDot * v3_rotMove.magnitude * F_grindSpeedMultiplier, Time.fixedDeltaTime);
+            curGrindSpeed = Mathf.Lerp(curGrindSpeed, movementDot * F_grindSpeedMultiplier, Time.fixedDeltaTime);
             if (movementDot < 0f && curGrindSpeed < 0.1f)
             {
                 curGrindSpeed = -1f;
@@ -549,7 +552,7 @@ public class PlayerController : MonoBehaviour
         }
         if (SF_splineFollower.direction == Spline.Direction.Backward)
         {
-            curGrindSpeed = Mathf.Lerp(curGrindSpeed, movementDot * v3_rotMove.magnitude * F_grindSpeedMultiplier, Time.fixedDeltaTime);
+            curGrindSpeed = Mathf.Lerp(curGrindSpeed, movementDot * F_grindSpeedMultiplier, Time.fixedDeltaTime);
             if (movementDot > 0f && curGrindSpeed > -0.1f)
             {
                 curGrindSpeed = 1f;
@@ -646,11 +649,14 @@ public class PlayerController : MonoBehaviour
         if (_possibleInteract.Contains(_interact))
             _possibleInteract.Remove(_interact);
     }
-    public void Graffiti_Start(GraffitiLine _graffiti, int[] _buttons)
+    public void Graffiti_Start(GraffitiLine _graffiti, int[] _buttons, bool _ascending = true)
     {
         _curGraffiti = _graffiti;
         i_graffitiButtons = _buttons;
-        i_graffitiCount = 0;
+
+        b_graffitiAscending = _ascending;
+        i_graffitiCount = _ascending ? 0 : _buttons.Length - 1;
+
         b_midGraffiti = true;
         RB_playerPhysics.linearVelocity = Vector3.zero;
         RB_playerPhysics.isKinematic = true;
@@ -661,21 +667,27 @@ public class PlayerController : MonoBehaviour
     {
         TM_graffitiLineText.gameObject.SetActive(true);
         string _text = "";
-        for (int i = i_graffitiCount; i < i_graffitiButtons.Length; i++)
-        {
-            switch (i_graffitiButtons[i])
-            {
-                case 0: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_1, TM_graffitiLineText, InputStrings.enumType.input); break;
-                case 1: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_2, TM_graffitiLineText, InputStrings.enumType.input); break;
-                case 2: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_3, TM_graffitiLineText, InputStrings.enumType.input); break;
-                case 3: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_4, TM_graffitiLineText, InputStrings.enumType.input); break;
-                case 4: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_5, TM_graffitiLineText, InputStrings.enumType.input); break;
-                case 5: _text += "".ToString_Input(InputStrings.inputActions.GraffitiLine_6, TM_graffitiLineText, InputStrings.enumType.input); break;
-                default:
-                    break;
-            }
-        }
+        if (b_graffitiAscending)
+            for (int i = i_graffitiCount; i < i_graffitiButtons.Length; i++)
+                _text += Graffiti_UpdateText_Individual(i_graffitiButtons[i]);
+        else
+            for (int i = i_graffitiCount; i >= 0; i--)
+                _text += Graffiti_UpdateText_Individual(i_graffitiButtons[i]);
         TM_graffitiLineText.text = _text;
+    }
+    string Graffiti_UpdateText_Individual(int _num)
+    {
+        switch (_num)
+        {
+            case 0: return "".ToString_Input(InputStrings.inputActions.GraffitiLine_1, TM_graffitiLineText, InputStrings.enumType.input);
+            case 1: return "".ToString_Input(InputStrings.inputActions.GraffitiLine_2, TM_graffitiLineText, InputStrings.enumType.input);
+            case 2: return "".ToString_Input(InputStrings.inputActions.GraffitiLine_3, TM_graffitiLineText, InputStrings.enumType.input);
+            case 3: return "".ToString_Input(InputStrings.inputActions.GraffitiLine_4, TM_graffitiLineText, InputStrings.enumType.input);
+            case 4: return "".ToString_Input(InputStrings.inputActions.GraffitiLine_5, TM_graffitiLineText, InputStrings.enumType.input);
+            case 5: return "".ToString_Input(InputStrings.inputActions.GraffitiLine_6, TM_graffitiLineText, InputStrings.enumType.input);
+            default:
+                return "";
+        }
     }
     void Graffiti_UpdateWorld()
     {
@@ -698,8 +710,9 @@ public class PlayerController : MonoBehaviour
         {
             //Success
             _curGraffiti.OnSuccess(i_graffitiCount);
-            i_graffitiCount++;
-            if (i_graffitiCount < i_graffitiButtons.Length)
+            if (b_graffitiAscending) i_graffitiCount++;
+            else i_graffitiCount--;
+            if (i_graffitiCount < i_graffitiButtons.Length && i_graffitiCount >= 0)
             {
                 Graffiti_UpdateWorld();
                 Graffiti_UpdateText();
@@ -723,6 +736,8 @@ public class PlayerController : MonoBehaviour
         i_graffitiCount = 0;
         RB_playerPhysics.isKinematic = false;
         A_model.Play("Grounded");
+        _curGraffiti.UE_OnFinish.Invoke();
+        _curGraffiti = null;
     }
     void PhysicsMovement()
     {

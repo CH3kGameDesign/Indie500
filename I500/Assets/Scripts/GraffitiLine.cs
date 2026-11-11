@@ -1,13 +1,16 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GraffitiLine : MonoBehaviour
 {
     public GraffitiPoint[] points;
     public GameObject[] enabledObjects;
     public GameObject[] disabledObjects;
-    public void PlayerInteract(PlayerController _player)
+    public UnityEvent UE_OnFinish;
+    public void PlayerInteract(PlayerController _player, int _num = 0)
     {
-        _player.Graffiti_Start(this, GenerateButtons());
+        bool _ascending = _num <= (points.Length / 2);
+        _player.Graffiti_Start(this, GenerateButtons(), _ascending);
     }
 
     public int[] GenerateButtons()
@@ -26,5 +29,19 @@ public class GraffitiLine : MonoBehaviour
         if (disabledObjects.Length > _num)
             if (disabledObjects[_num] != null)
                 disabledObjects[_num].SetActive(true);
+    }
+
+    public void ResetGraffiti_Delay(float _delay = 1)
+    {
+        Invoke(nameof(ResetGraffiti), _delay);
+    }
+    public void ResetGraffiti()
+    {
+        foreach (var item in enabledObjects)
+            if (item != null)
+                item.SetActive(true);
+        foreach (var item in disabledObjects)
+            if (item != null)
+                item.SetActive(false);
     }
 }

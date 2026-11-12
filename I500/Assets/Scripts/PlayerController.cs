@@ -116,6 +116,7 @@ public class PlayerController : MonoBehaviour
         public float FOV_sprint = 70f;
         public float FOV_crouch = 50f;
         public float FOV_groundPound = 40f;
+        public float FOV_graffitiImpact = 80f;
         public float Dutch_wallRun = 10f;
     }
     #endregion
@@ -148,10 +149,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CameraJuiceHandler();
         if (b_midGraffiti)
             return;
         CameraMovement();
-        CameraJuiceHandler();
         AnimationUpdate();
         if (!_curVehicle)
             InteractInput();
@@ -655,11 +656,29 @@ public class PlayerController : MonoBehaviour
         i_graffitiButtons = _buttons;
 
         b_graffitiAscending = _ascending;
-        i_graffitiCount = _ascending ? 0 : _buttons.Length - 1;
+        if (_ascending)
+        {
+            for (int i = 0; i < _buttons.Length; i++)
+                if (_buttons[i] >= 0)
+                {
+                    i_graffitiCount = i;
+                    break;
+                }
+        }
+        else
+        {
+            for (int i = _buttons.Length - 1; i >= 0; i--)
+                if (_buttons[i] >= 0)
+                {
+                    i_graffitiCount = i;
+                    break;
+                }
+        }
 
         b_midGraffiti = true;
         RB_playerPhysics.linearVelocity = Vector3.zero;
         RB_playerPhysics.isKinematic = true;
+        CM_camera.Lens.FieldOfView = CameraJuice.FOV_graffitiImpact;
         Graffiti_UpdateWorld();
         Graffiti_UpdateText();
     }
@@ -710,8 +729,17 @@ public class PlayerController : MonoBehaviour
         {
             //Success
             _curGraffiti.OnSuccess(i_graffitiCount);
+            CM_camera.Lens.FieldOfView = CameraJuice.FOV_graffitiImpact;
+            
             if (b_graffitiAscending) i_graffitiCount++;
             else i_graffitiCount--;
+            while (i_graffitiCount < i_graffitiButtons.Length && i_graffitiCount >= 0)
+            {
+                if (i_graffitiButtons[i_graffitiCount] >= 0)
+                    break;
+                if (b_graffitiAscending) i_graffitiCount++;
+                else i_graffitiCount--;
+            }
             if (i_graffitiCount < i_graffitiButtons.Length && i_graffitiCount >= 0)
             {
                 Graffiti_UpdateWorld();
@@ -726,6 +754,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             //Fail
+            Graffiti_Fail();
         }
     }
     void Graffiti_Finish()
@@ -737,6 +766,16 @@ public class PlayerController : MonoBehaviour
         RB_playerPhysics.isKinematic = false;
         A_model.Play("Grounded");
         _curGraffiti.UE_OnFinish.Invoke();
+        _curGraffiti = null;
+    }
+    void Graffiti_Fail()
+    {
+        b_midGraffiti = false;
+        TM_graffitiLineText.gameObject.SetActive(false);
+        i_graffitiButtons = new int[0];
+        i_graffitiCount = 0;
+        RB_playerPhysics.isKinematic = false;
+        A_model.Play("Grounded");
         _curGraffiti = null;
     }
     void PhysicsMovement()

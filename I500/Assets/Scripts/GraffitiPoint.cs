@@ -16,4 +16,13 @@ public class GraffitiPoint : Interact
         base.PlayerInteract(_player);
         _line.PlayerInteract(_player, _pointNum);
     }
+
+    public void OnSuccess()
+    {
+        B_canInteract.value = false;
+    }
+    public void Reset()
+    {
+        B_canInteract.value = true;
+    }
 }

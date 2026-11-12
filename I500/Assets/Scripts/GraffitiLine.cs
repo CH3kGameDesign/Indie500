@@ -17,7 +17,12 @@ public class GraffitiLine : MonoBehaviour
     {
         int[] _buttons = new int[points.Length];
         for (int i = 0; i < _buttons.Length; i++)
-            _buttons[i] = Random.Range(0, 5);
+        {
+            if (points[i].B_canInteract.value == true)
+                _buttons[i] = Random.Range(0, 5);
+            else
+                _buttons[i] = -1;
+        }
         return _buttons;
     }
 
@@ -29,6 +34,7 @@ public class GraffitiLine : MonoBehaviour
         if (disabledObjects.Length > _num)
             if (disabledObjects[_num] != null)
                 disabledObjects[_num].SetActive(true);
+        points[_num].OnSuccess();
     }
 
     public void ResetGraffiti_Delay(float _delay = 1)
@@ -43,5 +49,7 @@ public class GraffitiLine : MonoBehaviour
         foreach (var item in disabledObjects)
             if (item != null)
                 item.SetActive(false);
+        foreach (var item in points)
+            item.Reset();
     }
 }
